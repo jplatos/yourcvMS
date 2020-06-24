@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+
+{% block content %}
+
+<div class="section">
+    <h5>Imported record template</h5>
+    
+    <table class="stripped highlight">
+    <tbody>
+        <tr>
+            <td>Name</td> 
+            <td>{{object.name}}</td>
+        </tr>
+        <tr>
+            <td>Source</td> 
+            <td>{{object.source}}</td>
+        </tr>
+        <tr>
+            <td>Record Type</td> 
+            <td>{{object.record_type}}</td>
+        </tr>
+        <tr>
+            <td>Publication Type</td> 
+            <td>{{object.publication_type}}</td>
+        </tr>
+    </tbody>
+    </table>
+
+    <div class="divider"></div>
+    <h5>Fields</h5>
+    <form enctype="multipart/form-data" method="post" action="{% url 'yourcvMS:importedrecordtemplatefield-update' object.id %}">{% csrf_token %}
+    <table class="stripped highlight">
+    <tbody>        
+        {% for name, value, transform in fields %}
+        <tr>
+            <td>
+                <div class="input-field required" id="id_{{name}}_container">
+                    <select id="id_{{name}}" maxlength="200" name="{{name}}" type="text">
+                        <option value="">-----</option>
+                        {% for rname in record_fields %}
+                            <option value="{{rname}}" {% if rname == value %}selected{% endif %}>{{rname}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="id_{{name}}">{{name|title}}</label>
+                </div>
+            </td>
+            <td>
+                <div class="input-field required" id="id_{{name}}_transform_container">
+                    <input id="id_{{name}}_transform" maxlength="200" name="{{name}}_transform" type="text" value="{{transform}}">
+                    <label for="id_{{name}}_transform">{{name|title}} - transform</label>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <div class="row center">
+        <div class="col s12 m12 l12">
+        <button type="submit" class="btn">Save</button>
+        <a class="btn" href="{% url 'yourcvMS:importedrecordtemplate-list' %}">Cancel</a>  
+        </div>
+    </div>
+    </form>
+    <a href="{% url 'yourcvMS:importedrecordtemplate-list' %}">Back to list</a>
+</div>
+
+{% endblock %}

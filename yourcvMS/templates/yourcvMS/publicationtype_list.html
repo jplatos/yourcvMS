@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+
+{% block content %}
+
+<div class="section">
+    <h5>Publication types ({{publicationtype_list.count}})</h5>
+    <div class="row">
+        <div class="col s12 m12 l12">
+            <a class="btn-small green" href="{% url 'yourcvMS:publicationtype-create' %}"><i class="material-icons left">add</i>Create</a>
+        </div>
+    </div>
+
+    {% if publicationtype_list %}
+        <table class="stripped highlight">
+        <thead>
+            <th>Name</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for object in publicationtype_list %}
+            <tr>
+                <td>{{object.name}}</td> 
+                <td>
+                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:publicationtype-update' object.id %}"><i class="material-icons">edit</i></a>
+                    <a class="waves-effect waves-light red-text" href="{% url 'yourcvMS:publicationtype-delete' object.id %}"><i class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <p> No publication found.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

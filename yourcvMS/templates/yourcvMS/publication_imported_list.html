@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+
+{% block content %}
+
+<div class="section">
+    <h5>Imported Publications ({{publication_list.count}})</h5>
+    <a class="waves-effect waves-light btn" href="{% url 'yourcvMS:publication-remove-by-name' %}">Remove by name</a>
+    <a class="waves-effect waves-light btn" href="{% url 'yourcvMS:publication-merge-select' %}">Merge</a>
+    
+    {% if publication_list %}
+        <table class="stripped highlight">
+        <thead>
+            <th>Name</th>
+            {% comment %} <th>Name</th>
+            <th>Date of birth</th> {% endcomment %}
+            <th></th>
+        </thead>
+        <tbody>
+            {% for object in publication_list %}
+            <tr {% comment %}class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}"{% endcomment %}>
+                {% comment %} <td>{{object.login}}</td>{% endcomment %}
+                <td>
+                    {{object.title}}<br/>
+                    <i>{{object.authors_str}}</i><br/>
+                    {{object.source_str}}<br/>
+                </td> 
+                {% comment %} <td>{{object.date_of_birth|default_if_none:""}}</td> {% endcomment %}
+                <td>
+                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:publication-update' object.id %}"><i class="material-icons">edit</i></a>
+                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:publication-delete' object.id %}"><i class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <p> No publication found.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

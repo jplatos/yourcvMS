@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+
+{% block content %}
+
+<div class="section">
+    <h5>Imported record templates</h5>
+    
+    <div class="row">
+        <div class="col s12 m12 l12">
+            <a class="btn-small green" href="{% url 'yourcvMS:importedrecordtemplate-create' %}"><i class="material-icons left">add</i>Create</a>
+        </div>
+    </div>
+    {% if importedrecordtemplate_list %}
+        <table class="stripped highlight">
+        <thead>
+            <th>Name</th>
+            <th>Source</th>
+            <th>Record Type</th>
+            <th>Publication type</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for object in importedrecordtemplate_list %}
+            <tr class="clickable-row" data-href="{% url 'yourcvMS:importedrecordtemplate-detail' object.id %}">
+                <td>{{object.name}}</td> 
+                <td>{{object.source}}</td> 
+                <td>{{object.record_type}}</td> 
+                <td>{{object.publication_type}}</td> 
+                <td>
+                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:importedrecordtemplate-update' object.id %}"><i class="material-icons">edit</i></a>
+                    <a class="waves-effect waves-light red-text" href="{% url 'yourcvMS:importedrecordtemplate-delete' object.id %}"><i class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <p> No imported record templates found.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

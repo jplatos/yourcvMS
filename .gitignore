@@ -1,0 +1,4 @@
+*.pyc
+/.vscode
+*.bib
+/yourCV/secret.py

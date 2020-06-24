@@ -1,0 +1,12 @@
+.month_panel{
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bolder;
+    display: inline-flex;
+    vertical-align: center;
+}
+
+.month_text {
+    margin-left: 10px;
+    margin-right: 10px;
+}

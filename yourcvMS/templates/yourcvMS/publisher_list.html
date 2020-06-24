@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+
+{% block content %}
+
+<div class="section">
+    <h5>Publishers</h5>
+    {% if publisher_list %}
+        <table class="stripped highlight">
+        <thead>
+            <th>Name</th>
+            {% comment %} <th>Name</th>
+            <th>Date of birth</th> {% endcomment %}
+            <th></th>
+        </thead>
+        <tbody>
+            {% for object in publisher_list %}
+            <tr class="clickable-row" data-href="{% url 'yourcvMS:publisher-detail' object.id %}">
+                {% comment %} <td>{{object.login}}</td>{% endcomment %}
+                <td>
+                    {{object.name}}<br/>
+                    <i>{{object.address}}</i>
+                </td> 
+                {% comment %} <td>{{object.date_of_birth|default_if_none:""}}</td> {% endcomment %}
+                <td>
+                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:publisher-update' object.id %}"><i class="material-icons">edit</i></a>
+                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:publisher-delete' object.id %}"><i class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <p> No publisher found.</p>
+    {% endif %}
+    <a href="{% url 'yourcvMS:publisher-normalize' %}">Normalize titles</a>
+</div>
+
+{% endblock %}

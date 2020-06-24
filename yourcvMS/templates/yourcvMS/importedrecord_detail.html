@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+
+{% block content %}
+
+<div class="section">
+    <h5>Imported record</h5>
+    
+    <table class="stripped highlight">
+    <tbody>
+        <tr>
+            <td>Source</td> 
+            <td>{{object.source}}</td>
+        </tr>
+        <tr>
+            <td>Type</td> 
+            <td>{{object.record_type}}</td>
+        </tr>
+        {% for field in object.importedrecordfield_set.all %}
+        <tr>
+            <td>{{field.name}}</td> 
+            <td>{{field.value}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    <a href="{% url 'yourcvMS:importedrecord-list' %}">Back to list</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="section">
+    <h5>Status</h5>
+    <div class="row">
+        <div class="col s12 m6 l6">
+            <table class="stripped highlight">
+                {% comment %} <thead>
+                    <th></th>
+                    <th></th>
+                </thead> {% endcomment %}
+                <tbody>
+                    <tr class="clickable-row" data-href="{% url 'yourcvMS:person-list' %}">
+                        <td>Persons:</td>
+                        <td class="right-align">{{person_count}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'yourcvMS:publication-list' %}">
+                        <td>Publications:</td>
+                        <td class="right-align">{{publication_count}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'yourcvMS:journal-list' %}">
+                        <td>Journals:</td>
+                        <td class="right-align">{{journal_count}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'yourcvMS:publisher-list' %}">
+                        <td>Publishers:</td>
+                        <td class="right-align">{{publisher_count}}</td>
+                    </tr>
+                    {% comment %} <tr class="clickable-row" data-href="{% url 'departmentMS:project-list' %}">
+                        <td>Projects:</td>
+                        <td class="right-align">{{projects_active}}</td>
+                        <td class="right-align">{{projects_all}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'departmentMS:source-list' %}">
+                        <td>Sources:</td>
+                        <td class="right-align">{{sources_active}}</td>
+                        <td class="right-align">{{sources_all}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'departmentMS:faculty-list' %}">
+                        <td>Faculties:</td>
+                        <td class="right-align">{{faculties_active}}</td>
+                        <td class="right-align">{{faculties_all}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'departmentMS:agency-list' %}">
+                        <td>Agencies:</td>
+                        <td class="right-align">{{agencies_active}}</td>
+                        <td class="right-align">{{agencies_all}}</td>
+                    </tr>
+                    <tr class="clickable-row" data-href="{% url 'departmentMS:wagetariff-list' %}">
+                        <td>Wage tariffs:</td>
+                        <td class="right-align">{{wagetariffs_active}}</td>
+                        <td class="right-align">{{wagetariffs_all}}</td>
+                    </tr> {% endcomment %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div> 
+
+{% comment %} <div class="section">
+    <h5>Employees <a href="{% url 'departmentMS:employee-workload-report-summary'%}">Summary</a><a href="{% url 'departmentMS:employee-workload-report'%}">Report</a></h5>
+    {% if project_list %}
+        <table class="stripped highlight">
+        <thead>
+            <th>Login</th>
+            <th>Name</th>
+            <th>Date of birth</th>
+            <th class="right-align">Total</th>
+            <th></th>
+        </thead>
+        <tbody>
+            {% for object in employee_list %}
+            <tr class="clickable-row" data-href="{% url 'departmentMS:employee-detail' object.id %}">
+                <td>{{object.login}}</td>
+                <td>{{object.full_name_titles}}</td>
+                <td>{{object.date_of_birth|default_if_none:""}}</td>
+                <td class="right-align">{{object.total_sum|floatformat:0}}</td>
+                <td>
+                    <a class="waves-effect waves-light" href="{% url 'departmentMS:employee-update' object.id %}"><i class="material-icons">edit</i></a>
+                    <a class="waves-effect waves-light" href="{% url 'departmentMS:employee-delete' object.id %}"><i class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <p> No employee found.</p>
+    {% endif %}
+    <a class="waves-effect waves-light" href="{% url 'departmentMS:employee-create' %}">Add employee</a>
+    <a class="waves-effect waves-light" href="{% url 'departmentMS:employee-import' %}">Import employees</a>
+</div>
+
+{% comment %} <a href="{% url 'logout' %}">Logout</a> {% endcomment %}
+{% endblock %}

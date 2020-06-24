@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset='utf-8'>
+<title>{% block title %}YourCV MS - A Curriculum Vitae management system{% endblock %}</title>
+
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/dms.css' %}">
+
+{% block header %} {% endblock %}
+</head>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+                <li><a href="{% url 'yourcvMS:index' %}">Home</a></li>
+                <li><a href="{% url 'yourcvMS:person-list' %}">Persons</a></li>
+                <li><a href="{% url 'yourcvMS:publicationtype-list' %}">Publication Types</a></li>
+                <li><a href="{% url 'yourcvMS:publication-list' %}">Publications</a></li>
+                <li><a href="{% url 'yourcvMS:publication-imported-list' %}">Imported Publications</a></li>
+                <li><a href="{% url 'yourcvMS:journal-list' %}">Journals</a></li>
+                <li><a href="{% url 'yourcvMS:publisher-list' %}">Publishers</a></li>
+                <li><a href="{% url 'yourcvMS:importedrecord-list' %}">Imported Records</a></li>
+                <li><a href="{% url 'yourcvMS:importedrecordtemplate-list' %}">Imported Record Templates</a></li>
+            </ul>
+        </div>
+    </nav> 
+    <ul class="sidenav" id="mobile-demo">
+        <li><a href="{% url 'yourcvMS:index' %}">Home</a></li>
+        <li><a href="{% url 'yourcvMS:person-list' %}">Persons</a></li>
+        <li><a href="{% url 'yourcvMS:publicationtype-list' %}">Publication Types</a></li>
+        <li><a href="{% url 'yourcvMS:publication-list' %}">Publications</a></li>
+        <li><a href="{% url 'yourcvMS:publication-imported-list' %}">Imported Publications</a></li>
+        <li><a href="{% url 'yourcvMS:journal-list' %}">Journals</a></li>
+        <li><a href="{% url 'yourcvMS:publisher-list' %}">Publishers</a></li>
+        <li><a href="{% url 'yourcvMS:importedrecord-list' %}">Imported Records</a></li>
+        <li><a href="{% url 'yourcvMS:importedrecordtemplate-list' %}">Imported Record Templates</a></li>
+    </ul>
+
+    <div class="container">  
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>if (!window.jQuery) { document.write('<script src="bin/jquery-3.2.1.min.js"><\/script>'); }
+    </script>
+{% include 'material/includes/material_css.html' %}
+{% include 'material/includes/material_js.html' %}
+    <script>
+    $(document).ready(function(){$('.tooltipped').tooltip(); });
+    $(document).ready(function(){$('.modal').modal();});
+    $(document).ready(function($){$(".clickable-row").click(function() {
+        window.location = $(this).data("href"); });});
+    $(document).ready(function(){$('.sidenav').sidenav();});
+    $(document).ready(function(){$('select').formSelect();});
+    </script>
+</html>
+
