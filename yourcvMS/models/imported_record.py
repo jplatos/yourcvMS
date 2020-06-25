@@ -33,8 +33,6 @@ class ImportedRecord(TimeTracked):
         return '-----'
 
 
-
-
 class ImportedRecordField(TimeTracked):
     record = models.ForeignKey(ImportedRecord, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
@@ -42,6 +40,7 @@ class ImportedRecordField(TimeTracked):
 
     def __str__(self):
         return f'{self.name} - {self.value}'
+
 
 class ImportedRecordTemplate(TimeTracked):
     class Meta:
@@ -53,7 +52,7 @@ class ImportedRecordTemplate(TimeTracked):
     record_type = models.ForeignKey(ImportedRecordType, on_delete=models.CASCADE)
 
     publication_type = models.ForeignKey(PublicationType, on_delete=models.CASCADE)
-
+    process_journal = models.BooleanField(default=False)
     filter_field = models.CharField(max_length=50, blank=True, null=True)
     filter_value = models.CharField(max_length=200, blank=True, null=True)
 

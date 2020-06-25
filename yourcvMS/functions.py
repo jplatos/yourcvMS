@@ -1,6 +1,7 @@
 import bibtexparser
 import django.db.transaction as transaction
-from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType
+from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate
+from .helpers import *
 
 def extract_unique_authors(entries):
     result = set()
@@ -195,7 +196,7 @@ def publication_remove_eol():
 
 
 @transaction.atomic
-def import_records(uploaded_file, importedsource):
+def import_records_form_bib(uploaded_file, importedsource):
     if uploaded_file.content_type =='application/octet-stream' and uploaded_file.name.endswith('.bib'):
         content = uploaded_file.read()  
         bib_database = bibtexparser.loads(content) 
@@ -225,3 +226,57 @@ def import_records(uploaded_file, importedsource):
 
     return
     
+
+def get_template_by_record(record):
+    templates = ImportedRecordTemplate.objects.filter(source=record.source, record_type = record.record_type)
+    if templates:
+        return templates.first()
+
+
+@transaction.atomic
+def import_record_by_template(record, template):
+    
+    record_fields = {x.name:x.value for x in record.importedrecordfield_set.all()}
+
+    pub = Publication()
+    pub.publication_type = template.publication_type
+
+    for field in template.importedrecordtemplatefield_set.all():
+        if field.record_field in record_fields:
+            pub.__dict__[field.publication_field] = record_fields[field.record_field]
+    
+    if template.process_journal and 'journal' in record_fields:
+        jname = titlelize(record_fields['journal'])
+        address = record_fields['address'].lstrip('{').rstrip('}') if 'address' in record_fields else None
+        
+        publisher_name = record_fields['publisher'].lstrip('{').rstrip('}') if 'publisher' in record_fields else None
+        if publisher_name:
+            publisher_name = titlelize(publisher_name)
+            try:
+                publisher = Publisher.objects.get(name=publisher_name)
+            except Publisher.DoesNotExist:
+                publisher = Publisher.objects.create(name=publisher_name, address=address)
+        else:
+            publisher = None
+        issn = record_fields['issn'].lstrip('{').rstrip('}') if 'issn' in record_fields else None
+        if issn:
+            issn = normalize_issn(issn)
+        eissn = record_fields['eissn'].lstrip('{').rstrip('}') if 'eissn' in record_fields else None
+        if eissn:
+            eissn = normalize_issn(eissn)
+        try:
+            journal = Journal.objects.get(issn=issn)
+        except Journal.DoesNotExist:                    
+            journal = Journal.objects.create(title=jname, issn=issn, eissn=eissn, publisher = publisher)
+        pub.journal = journal
+    
+    if pub.title:
+        pub.title = titlelize(pub.title)
+
+    pub.imported = True
+    pub.save()
+
+    for name, value in record_fields.items():
+        pub.publicationfield_set.create(name=name, value=value)
+
+    return

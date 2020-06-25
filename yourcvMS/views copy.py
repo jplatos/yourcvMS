@@ -356,8 +356,8 @@ class ImportedRecordListView(ListView):
 
 
 class ImportedRecordImportBibView(FormView):
-    form_class = ImportedRecordImportBibForm
-    template_name = 'yourcvMS/importedrecord_importbib_form.html'
+    form_class = ImportedRecordImportForm
+    template_name = 'yourcvMS/importedrecord_import_form.html'
     success_url = reverse_lazy('yourcvMS:importedrecord-list')
 
     def form_valid(self, form):
@@ -368,12 +368,31 @@ class ImportedRecordImportBibView(FormView):
                 uploaded_field = form.cleaned_data['file_field']
                 importedsource = form.cleaned_data['source_field']
 
-                import_records_form_bib(uploaded_field, importedsource)
+                import_records(uploaded_field, importedsource)
             except :
                 print('Error when handling file import for projects', sys.exc_info())
                 pass
         return super().form_valid(form)
 
+
+class ImportedRecordImportView(FormView):
+    form_class = ImportedRecordImportForm
+    template_name = 'yourcvMS/importedrecord_import_form.html'
+    success_url = reverse_lazy('yourcvMS:importedrecord-list')
+
+    def form_valid(self, form):
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)
+        # if form.is_valid():
+        #     try:
+        #         uploaded_field = form.cleaned_data['file_field']
+        #         importedsource = form.cleaned_data['source_field']
+
+        #         import_records(uploaded_field, importedsource)
+        #     except :
+        #         print('Error when handling file import for projects', sys.exc_info())
+        #         pass
+        return super().form_valid(form)
 
 class ImportedRecordDetailView(DetailView):
     model = ImportedRecord
@@ -390,6 +409,26 @@ class ImportedSourceCreateView(CreateView):
 
 class ImportedSourceDeleteView(DeleteView):
     model = ImportedSource
+
+class ImportedRecordImportView(FormView):
+    form_class = ImportedRecordImportForm
+    template_name = 'yourcvMS/importedrecord_import_form.html'
+    success_url = reverse_lazy('yourcvMS:importedrecord-list')
+
+    # def form_valid(self, form):
+    #     form_class = self.get_form_class()
+    #     form = self.get_form(form_class)
+    #     if form.is_valid():
+    #         try:
+    #             uploaded_field = form.cleaned_data['file_field']
+    #             importedsource = form.cleaned_data['source_field']
+
+    #             import_records(uploaded_field, importedsource)
+    #         except :
+    #             print('Error when handling file import for projects', sys.exc_info())
+    #             pass
+    #     return super().form_valid(form)
+
 
 #######################################
 #  ImportedRecord
@@ -424,35 +463,7 @@ class ImportedRecordTemplateDetailView(DetailView):
     
         return context
 
-
-class ImportedRecordImportView(SingleObjectMixin, FormView):
-    form_class = ImportedRecordImportForm
-    template_name = 'yourcvMS/importedrecord_import_form.html'
-    success_url = reverse_lazy('yourcvMS:importedrecord-list')
-    model = ImportedRecord
-
-    def get_context_data(self, **kwargs):
-        self.object = self.get_object()
-        context = super().get_context_data(**kwargs)
-        context["template"] = get_template_by_record(self.object)
-        # print(context)
-        return context
-
-    def form_valid(self, form):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            try:
-                record = self.get_object()
-                template = get_template_by_record(record)
-
-                import_record_by_template(record, template)
-            except :
-                print('Error when handling file import for projects', sys.exc_info())
-                pass
-        return super().form_valid(form)
-
-
+    
 class ImportedRecordTemplateFieldFormView(SingleObjectMixin, FormView):
     form_class = ImportedRecordTemplateFieldForm
     template_name = 'yourcvMS/importedrecordtemplate_detail.html'
@@ -481,12 +492,12 @@ class ImportedRecordTemplateFieldFormView(SingleObjectMixin, FormView):
 
 class ImportedRecordTemplateCreateView(CreateView):
     model = ImportedRecordTemplate
-    fields = ['name', 'source', 'record_type', 'publication_type', 'process_journal', 'filter_field', 'filter_value']
+    fields = ['name', 'source', 'record_type', 'publication_type', 'filter_field', 'filter_value']
     success_url = reverse_lazy('yourcvMS:importedrecordtemplate-list')
 
 class ImportedRecordTemplateUpdateView(UpdateView):
     model = ImportedRecordTemplate
-    fields = ['name', 'source', 'record_type', 'publication_type', 'process_journal', 'filter_field', 'filter_value']
+    fields = ['name', 'source', 'record_type', 'publication_type', 'filter_field', 'filter_value']
     success_url = reverse_lazy('yourcvMS:importedrecordtemplate-list')
 
 class ImportedRecordTemplateDeleteView(DeleteView):

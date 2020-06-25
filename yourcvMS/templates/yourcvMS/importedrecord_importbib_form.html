@@ -12,15 +12,7 @@
             <div class="card-content">
                 <form enctype="multipart/form-data" method="post">{% csrf_token %}
                     {% form  form=form %} {% endform %}
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Template:</td>
-                                <td>{{template}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button type="submit" class="btn">Import publication</button>
+                    <button type="submit" class="btn">Next</button>
                     <a class="btn" href="{% url 'yourcvMS:importedrecord-list' %}">Cancel</a>                    
                 </form>
             </div>

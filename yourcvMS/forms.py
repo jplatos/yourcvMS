@@ -1,5 +1,5 @@
 from django import forms
-from .models import Person, Publication, ImportedSource
+from .models import Person, Publication, ImportedSource, ImportedRecordTemplate
 
 class PublicationImportForm(forms.Form):
     file_field = forms.FileField()
@@ -15,9 +15,13 @@ class PublicationMergeSelectForm(forms.Form):
 class PublicationMergeFinalForm(forms.Form):    
     pass
 
-class ImportedRecordImportForm(forms.Form):
+class ImportedRecordImportBibForm(forms.Form):
     file_field = forms.FileField()
     source_field = forms.ModelChoiceField(queryset=ImportedSource.objects.all())
+
+class ImportedRecordImportForm(forms.Form):    
+    # template_field = forms.ModelChoiceField(queryset=ImportedRecordTemplate.objects.all())
+    pass
 
 class ImportedRecordTemplateFieldForm(forms.Form):    
     pass
