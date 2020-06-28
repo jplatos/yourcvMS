@@ -52,6 +52,7 @@ urlpatterns = [
     path('imported-record/<int:pk>/import', views.ImportedRecordImportView.as_view(), name='importedrecord-import'),
     path('imported-record/<int:pk>/delete', views.ImportedRecordDeleteView.as_view(), name='importedrecord-delete'),
     path('imported-record/import-bib', views.ImportedRecordImportBibView.as_view(), name='importedrecord-import-bib'),
+    path('imported-record/import-all', views.ImportedRecordImportAllView.as_view(), name='importedrecord-import-all'),
 
     path('imported-record-template/list', views.ImportedRecordTemplateListView.as_view(), name='importedrecordtemplate-list'),
     path('imported-record-template/create', views.ImportedRecordTemplateCreateView.as_view(), name='importedrecordtemplate-create'),

@@ -23,5 +23,8 @@ class ImportedRecordImportForm(forms.Form):
     # template_field = forms.ModelChoiceField(queryset=ImportedRecordTemplate.objects.all())
     pass
 
+class ImportedRecordImportAllForm(forms.Form):   
+    pass
+
 class ImportedRecordTemplateFieldForm(forms.Form):    
     pass

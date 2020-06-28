@@ -13,10 +13,6 @@
             <table>
                 <tbody>
                     <tr>
-                        <td>Template:</td>
-                        <td>{{template}}</td>
-                    </tr>
-                    <tr>
                         <td><b>Authors:</b></td>
                         <td></td>
                     </tr>
@@ -37,7 +33,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <button type="submit" class="btn">Import publication</button>
+            <button type="submit" class="btn green">Import publication</button>
             <a class="btn" href="{% url 'yourcvMS:importedrecord-list' %}">Cancel</a>                    
         </form>
     </div>

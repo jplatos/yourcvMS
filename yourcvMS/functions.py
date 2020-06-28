@@ -1,15 +1,23 @@
 import bibtexparser
 import django.db.transaction as transaction
-from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate
+from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person
 from .helpers import *
 
-def extract_unique_authors(entries):
+# def extract_unique_authors(entries):
+#     result = set()
+#     for entry in entries:
+#         if 'author' in entry:
+#             names = entry['author'].replace('\n', ' ').replace('\r', ' ').split(' and ')
+#             for name in names:
+#                 result.add(name.strip())
+#     return sorted(result)
+
+def extract_unique_authors(authors_list):
     result = set()
-    for entry in entries:
-        if 'author' in entry:
-            names = entry['author'].replace('\n', ' ').replace('\r', ' ').split(' and ')
-            for name in names:
-                result.add(name.strip())
+    for authors in authors_list:
+        names = authors.replace('\n', ' ').replace('\r', ' ').split(' and ')
+        for name in names:
+            result.add(name.strip())
     return sorted(result)
 
 
@@ -229,22 +237,35 @@ def import_records_form_bib(uploaded_file, importedsource):
 
 def get_template_by_record(record):
     templates = ImportedRecordTemplate.objects.filter(source=record.source, record_type = record.record_type)
+    
     if templates:
-        return templates.first()
+        for template in templates:
+            if template.filter_field:
+                try:
+                    field = record.importedrecordfield_set.get(name=template.field_field)
+                    if template.filter_value == field.value:
+                        return template
+                except:
+                    pass
+            else:
+                return template
+    return None
 
 
 @transaction.atomic
-def import_record_by_template(record, template):
+def import_record_by_template(record, template, author_map):
     
     record_fields = {x.name:x.value for x in record.importedrecordfield_set.all()}
 
     pub = Publication()
     pub.publication_type = template.publication_type
 
+    # process fields from the template and assign it to the publication
     for field in template.importedrecordtemplatefield_set.all():
         if field.record_field in record_fields:
             pub.__dict__[field.publication_field] = record_fields[field.record_field]
     
+    # process journal is required.
     if template.process_journal and 'journal' in record_fields:
         jname = titlelize(record_fields['journal'])
         address = record_fields['address'].lstrip('{').rstrip('}') if 'address' in record_fields else None
@@ -276,7 +297,43 @@ def import_record_by_template(record, template):
     pub.imported = True
     pub.save()
 
+    # process authors of the publication
+    if 'author' in record_fields:
+        names = extract_unique_authors([record_fields['author']])
+        for idx, author in enumerate(names):
+            person_id = int(author_map[author])
+            if person_id==0:
+                first = ''
+                last = author
+                if ',' in author:
+                    last, first = author.split(',')
+                person = Person.objects.create(last_name=last.strip(), first_name = first.strip())
+                author_map[author] = person.id
+            else:   
+                person = Person.objects.get(pk=person_id)
+                
+            pub.author_set.create(index=idx, person=person)
+
+            altname, _ = AltName.objects.get_or_create(name=author, defaults={'person':person})
+
+    # copy all record fields to publication fields for later processing
     for name, value in record_fields.items():
         pub.publicationfield_set.create(name=name, value=value)
+
+    ImportedRecord.delete(record)
+    return
+
+
+
+@transaction.atomic
+def import_record_all_by_template(records, author_map):
+    
+    for record in records:
+        template = get_template_by_record(record)
+        
+        if not template:
+            continue
+
+        import_record_by_template(record, template, author_map)
 
     return

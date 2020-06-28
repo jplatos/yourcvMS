@@ -57,7 +57,7 @@ class ImportedRecordTemplate(TimeTracked):
     filter_value = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
-        return f'{self.source.name} - {self.record_type.name} => {self.publication_type.name}'
+        return f'{self.name}: {self.source.name} - {self.record_type.name} => {self.publication_type.name}'
 
 
 class ImportedRecordTemplateField(TimeTracked):

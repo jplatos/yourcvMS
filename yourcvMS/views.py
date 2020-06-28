@@ -391,8 +391,105 @@ class ImportedSourceCreateView(CreateView):
 class ImportedSourceDeleteView(DeleteView):
     model = ImportedSource
 
+
+class ImportedRecordImportView(SingleObjectMixin, FormView):
+    form_class = ImportedRecordImportForm
+    template_name = 'yourcvMS/importedrecord_import_form.html'
+    success_url = reverse_lazy('yourcvMS:importedrecord-list')
+    model = ImportedRecord
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+        context["template"] = get_template_by_record(self.object)
+
+        authors_field = self.object.importedrecordfield_set.get(name='author')
+        if authors_field:
+            authors_str = authors_field.value
+        if authors_str:
+            authors = extract_unique_authors([authors_str])
+            
+            altname_map = {x.name:x.person.id for x in AltName.objects.all()}
+            
+            author_person = []
+            for author in authors:
+                if author in altname_map:
+                    author_person.append((author, altname_map[author]))
+                else:
+                    author_person.append((author, 0))
+            context['authors'] = author_person
+        context['persons'] = Person.objects.all()
+        # print(context)
+        return context
+
+    def form_valid(self, form):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            try:
+                record = self.get_object()
+                template = get_template_by_record(record)
+
+                author_map = {x[3:]:self.request.POST[x] for x in self.request.POST.keys() if x.startswith("an_")}
+                print(author_map)
+                import_record_by_template(record, template, author_map)
+            except :
+                print('Error when handling file import for projects', sys.exc_info())
+                traceback.print_exc()
+                pass
+        return super().form_valid(form)
+
+
+class ImportedRecordImportAllView(FormView):
+    form_class = ImportedRecordImportAllForm
+    template_name = 'yourcvMS/importedrecord_import_all_form.html'
+    success_url = reverse_lazy('yourcvMS:importedrecord-list')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        records = ImportedRecord.objects.all()
+        authors = []
+        for record in records:
+            authors_field = record.importedrecordfield_set.get(name='author')
+            if authors_field:
+                authors.append(authors_field.value)
+
+        if authors:
+            authors = extract_unique_authors(authors)
+            
+            altname_map = {x.name:x.person.id for x in AltName.objects.all()}
+            
+            author_person = []
+            for author in authors:
+                if author in altname_map:
+                    author_person.append((author, altname_map[author]))
+                else:
+                    author_person.append((author, 0))
+            context['authors'] = author_person
+        context['persons'] = Person.objects.all()
+        # print(context)
+        return context
+
+    def form_valid(self, form):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            try:
+                records = ImportedRecord.objects.all()
+        
+                author_map = {x[3:]:self.request.POST[x] for x in self.request.POST.keys() if x.startswith("an_")}
+                # print(author_map)
+                import_record_all_by_template(records, author_map)
+            except :
+                print('Error when handling file import for projects', sys.exc_info())
+                traceback.print_exc()
+                pass
+        return super().form_valid(form)
+
+
 #######################################
-#  ImportedRecord
+#  ImportedRecordTemplate
 #######################################
 class ImportedRecordTemplateListView(ListView):
     model = ImportedRecordTemplate
@@ -406,7 +503,7 @@ class ImportedRecordTemplateDetailView(DetailView):
         publication_fields = ['key', 'title', 'year', 'pages', 'doi', 'abstract', 'keywords', 'wos_id', 'scopus_id', 'wos_citation_count', 'scopus_citation_count',
          'month', 'number', 'volume', 'conference', 'organized_from', 'organized_to', 'venue', 'series', 'book_title', 'publisher', 'isbn', 'issn']
 
-        record_fields = [x[0] for x in ImportedRecordField.objects.values_list('name').distinct()]
+        record_fields = [x[0] for x in ImportedRecordField.objects.filter(record__source=self.object.source, record__record_type=self.object.record_type).values_list('name').distinct()]
                 
         used_fields = {x.publication_field:(x.record_field,x.transform) for x in self.object.importedrecordtemplatefield_set.all()}
         
@@ -423,34 +520,6 @@ class ImportedRecordTemplateDetailView(DetailView):
         context["record_fields"] = record_fields
     
         return context
-
-
-class ImportedRecordImportView(SingleObjectMixin, FormView):
-    form_class = ImportedRecordImportForm
-    template_name = 'yourcvMS/importedrecord_import_form.html'
-    success_url = reverse_lazy('yourcvMS:importedrecord-list')
-    model = ImportedRecord
-
-    def get_context_data(self, **kwargs):
-        self.object = self.get_object()
-        context = super().get_context_data(**kwargs)
-        context["template"] = get_template_by_record(self.object)
-        # print(context)
-        return context
-
-    def form_valid(self, form):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            try:
-                record = self.get_object()
-                template = get_template_by_record(record)
-
-                import_record_by_template(record, template)
-            except :
-                print('Error when handling file import for projects', sys.exc_info())
-                pass
-        return super().form_valid(form)
 
 
 class ImportedRecordTemplateFieldFormView(SingleObjectMixin, FormView):

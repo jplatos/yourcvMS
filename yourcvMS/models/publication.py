@@ -8,7 +8,7 @@ class Publication(TimeTracked):
         ordering = ['-year', 'title']
 
     # type of the publication
-    publication_type = models.ForeignKey(PublicationType, on_delete=models.CASCADE)
+    publication_type = models.ForeignKey(PublicationType, on_delete=models.PROTECT)
     
     # A hidden field used for specifying or overriding the alphabetical order of entries (when the "author" and "editor" fields are missing). Note that this is very different from the key (mentioned just after this list) that is used to cite or cross-reference the entry.
     key = models.CharField(max_length=50, blank=True, null= True)
@@ -47,7 +47,7 @@ class Publication(TimeTracked):
     ########################################################
 
     # The journal or magazine the work was published in
-    journal = models.ForeignKey(Journal, on_delete=models.CASCADE, blank=True, null=True)
+    journal = models.ForeignKey(Journal, on_delete=models.PROTECT, blank=True, null=True)
     
     # The month of publication (or, if unpublished, the month of creation)
     month = models.CharField(max_length=20, blank=True, null= True)

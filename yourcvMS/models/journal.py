@@ -8,7 +8,7 @@ class Journal(TimeTracked):
         ordering = ['title']
 
     title = models.CharField(max_length=200)
-    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, blank=True, null=True)
+    publisher = models.ForeignKey(Publisher, on_delete=models.PROTECT, blank=True, null=True)
     issn = models.CharField(max_length=20, blank=True, null=True)
     eissn = models.CharField(max_length=20, blank=True, null=True)
 
