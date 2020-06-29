@@ -75,7 +75,7 @@ class Publication(TimeTracked):
     series = models.CharField(max_length=1000, blank=True, null= True)    
     
     # The title of the book, if only part of it is being cited
-    book_title = models.CharField(max_length=200, blank=True, null= True)
+    booktitle = models.CharField(max_length=200, blank=True, null= True)
 
     # The publisher's name
     publisher = models.CharField(max_length=100, blank=True, null= True)
@@ -99,8 +99,8 @@ class Publication(TimeTracked):
             parts.append(self.journal.title)
         elif self.series:
             parts.append(self.series)
-        if self.book_title:
-            parts.append(self.book_title)
+        if self.booktitle:
+            parts.append(self.booktitle)
         if self.volume:
             if self.number:
                 parts.append('{}({})'.format(self.volume, self.number))

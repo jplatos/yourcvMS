@@ -28,3 +28,6 @@ class ImportedRecordImportAllForm(forms.Form):
 
 class ImportedRecordTemplateFieldForm(forms.Form):    
     pass
+
+class PublicationApproveForm(forms.Form):
+    pass

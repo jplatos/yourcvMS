@@ -195,13 +195,6 @@ def remove_imported_by_name():
         if key in name_pub:
             Publication.delete(pub)
 
-def publication_remove_eol():
-    print('Remove EoL from publication titles')
-    for pub in Publication.objects.filter(imported=False):
-        if '\r' in pub.title or '\n' in pub.title:
-            pub.title = pub.title.replace('\r',' ').replace('\n', ' ')
-            pub.save()
-
 
 @transaction.atomic
 def import_records_form_bib(uploaded_file, importedsource):

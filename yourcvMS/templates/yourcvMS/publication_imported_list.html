@@ -9,7 +9,7 @@
     <h5>Imported Publications ({{publication_list.count}})</h5>
     <a class="waves-effect waves-light btn" href="{% url 'yourcvMS:publication-remove-by-name' %}">Remove by name</a>
     <a class="waves-effect waves-light btn" href="{% url 'yourcvMS:publication-merge-select' %}">Merge</a>
-    
+    <a class="waves-effect waves-light btn green" href="{% url 'yourcvMS:publication-approve-all' %}"><i class="material-icons left">check_box</i>Approve all</a>
     {% if publication_list %}
         <table class="stripped highlight">
         <thead>
@@ -21,7 +21,6 @@
         <tbody>
             {% for object in publication_list %}
             <tr {% comment %}class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}"{% endcomment %}>
-                {% comment %} <td>{{object.login}}</td>{% endcomment %}
                 <td>
                     {{object.title}}<br/>
                     <i>{{object.authors_str}}</i><br/>
@@ -29,8 +28,9 @@
                 </td> 
                 {% comment %} <td>{{object.date_of_birth|default_if_none:""}}</td> {% endcomment %}
                 <td>
+                    <a class="waves-effect waves-light green-text" href="{% url 'yourcvMS:publication-aprove' object.id %}"><i class="material-icons">check_box</i></a>
                     <a class="waves-effect waves-light" href="{% url 'yourcvMS:publication-update' object.id %}"><i class="material-icons">edit</i></a>
-                    <a class="waves-effect waves-light" href="{% url 'yourcvMS:publication-delete' object.id %}"><i class="material-icons">delete</i></a>
+                    <a class="waves-effect waves-light red-text" href="{% url 'yourcvMS:publication-delete' object.id %}"><i class="material-icons">delete</i></a>
                 </td>
             </tr>
             {% endfor %}

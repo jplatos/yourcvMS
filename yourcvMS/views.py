@@ -102,68 +102,6 @@ class PublicationImportedListView(ListView):
     queryset = Publication.objects.filter(imported=True)
     template_name = 'yourcvMS/publication_imported_list.html'
 
-class PublicationImportView(FormView):
-    form_class = PublicationImportForm
-    template_name = 'yourcvMS/publication_import_form.html'
-    success_url = reverse_lazy('yourcvMS:publication-list')
-    
-    def form_valid(self, form):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            try:
-                # print(form.cleaned_data)
-                entries = parse_bib_file(form.cleaned_data['file_field'])
-                if entries!=None:
-                    self.request.session['bib_entries'] = entries
-                    self.success_url = reverse('yourcvMS:publication-import-authors')
-            except :
-                print('Error when handling file import for projects', sys.exc_info())
-                tb = traceback.format_exc()
-                print(tb)
-                pass
-        return super().form_valid(form)
-
-
-class PublicationImportAuthorsView(TemplateView):
-    template_name = 'yourcvMS/publication_import_authors_form.html'
-    success_url = reverse_lazy('yourcvMS:publication-list')
-    
-    def get_context_data(self, **kwargs):
-        context = {}
-        bib_entries = self.request.session['bib_entries']
-        # print(bib_entries)
-        authors = extract_unique_authors(bib_entries)
-        # print(authors)
-        altnames = AltName.objects.all()
-
-        altname_map = {x.name:x.person.id for x in altnames}
-        
-        author_person = []
-        for author in authors:
-            if author in altname_map:
-                author_person.append((author, altname_map[author]))
-            else:
-                author_person.append((author, 0))
-        context['authors'] = author_person
-        context['persons'] = Person.objects.all()
-        return context
-
-    
-class PublicationImportAuthorsFinishView(View):
-
-    def post(self, request, *args, **kwargs):
-        try:
-            bib_entries = request.session['bib_entries']
-            import_publications(bib_entries, request.POST)
-            del request.session['bib_entries']
-        except :
-            print('Error when handling file import publications', sys.exc_info())
-            tb = traceback.format_exc()
-            print(tb)                
-            
-        return redirect('yourcvMS:publication-list')
-
 
 class PublicationUpdateView(UpdateView):
     model = Publication
@@ -180,6 +118,45 @@ class PublicationDetailView(DetailView):
 class PublicationDeleteView(DeleteView):
     model = Publication
     success_url = reverse_lazy('yourcvMS:publication-list')
+
+class PublicationApproveView(SingleObjectMixin, FormView):
+    template_name = 'yourcvMS/publication_approve_form.html'
+    form_class = PublicationApproveForm
+    model = Publication
+    success_url = reverse_lazy('yourcvMS:publication-imported-list')
+
+    def get_context_data(self, **kwargs):
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
+        # context[""] = 
+        return context
+    
+    def form_valid(self, form):
+        try:
+            publication = self.get_object()
+            publication.imported = False
+            publication.save()
+        except:
+            print('Error when handling file approve publications', sys.exc_info())
+        return super().form_valid(form)
+
+
+class PublicationApproveAllView(FormView):
+    template_name = 'yourcvMS/publication_approve_all_form.html'
+    form_class = PublicationApproveForm
+    success_url = reverse_lazy('yourcvMS:publication-list')
+    
+    @transaction.atomic
+    def form_valid(self, form):
+        try:
+            publications = Publication.objects.filter(imported=True)
+            for publication in publications:
+                publication.imported = False
+                publication.save()
+        except:
+            print('Error when handling file approve publications', sys.exc_info())
+        return super().form_valid(form)
+
 
 class PublicationRemoveByNameView(View):
 
@@ -278,15 +255,6 @@ class PublicationMergeFinalView(FormView):
             print('Error when handling file import for projects', sys.exc_info())
             pass
         return super().form_valid(form)
-
-
-
-class PublicationRemoveEolView(View):
-
-    def get(self, request, *args, **kwargs):
-        print('Remove EoL form publication titles', flush=True)
-        publication_remove_eol()
-        return redirect(reverse('yourcvMS:publication-list'))
 
 
 #######################################
@@ -501,7 +469,7 @@ class ImportedRecordTemplateDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         
         publication_fields = ['key', 'title', 'year', 'pages', 'doi', 'abstract', 'keywords', 'wos_id', 'scopus_id', 'wos_citation_count', 'scopus_citation_count',
-         'month', 'number', 'volume', 'conference', 'organized_from', 'organized_to', 'venue', 'series', 'book_title', 'publisher', 'isbn', 'issn']
+         'month', 'number', 'volume', 'conference', 'organized_from', 'organized_to', 'venue', 'series', 'booktitle', 'publisher', 'isbn', 'issn']
 
         record_fields = [x[0] for x in ImportedRecordField.objects.filter(record__source=self.object.source, record__record_type=self.object.record_type).values_list('name').distinct()]
                 
