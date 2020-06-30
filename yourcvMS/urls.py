@@ -19,6 +19,8 @@ urlpatterns = [
     path('publication/<int:pk>/update', views.PublicationUpdateView.as_view(), name='publication-update'),
     path('publication/<int:pk>/delete', views.PublicationDeleteView.as_view(), name='publication-delete'),
     path('publication/<int:pk>/approve', views.PublicationApproveView.as_view(), name='publication-aprove'),
+    path('publication/<int:pk>/merge', views.PublicationMergeView.as_view(), name='publication-merge'),
+    
     path('publication/imported-list', views.PublicationImportedListView.as_view(), name='publication-imported-list'),
     path('publication/remove-by-name', views.PublicationRemoveByNameView.as_view(), name='publication-remove-by-name'),
     path('publication/merge-select', views.PublicationMergeSelectView.as_view(), name='publication-merge-select'),
@@ -51,6 +53,7 @@ urlpatterns = [
     path('imported-record/<int:pk>/delete', views.ImportedRecordDeleteView.as_view(), name='importedrecord-delete'),
     path('imported-record/import-bib', views.ImportedRecordImportBibView.as_view(), name='importedrecord-import-bib'),
     path('imported-record/import-all', views.ImportedRecordImportAllView.as_view(), name='importedrecord-import-all'),
+    path('imported-record/delete-all', views.ImportedRecordDeleteAllView.as_view(), name='importedrecord-delete-all'),
 
     path('imported-record-template/list', views.ImportedRecordTemplateListView.as_view(), name='importedrecordtemplate-list'),
     path('imported-record-template/create', views.ImportedRecordTemplateCreateView.as_view(), name='importedrecordtemplate-create'),

@@ -11,7 +11,12 @@ class PersonMergeForm(forms.Form):
 class PublicationMergeSelectForm(forms.Form):
     imported_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=True))
     original_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=False))
-    
+
+class PublicationMergeSingleSelectForm(forms.Form):
+    imported_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=True), disabled=True)
+    original_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=False))
+
+
 class PublicationMergeFinalForm(forms.Form):    
     pass
 
@@ -24,6 +29,9 @@ class ImportedRecordImportForm(forms.Form):
     pass
 
 class ImportedRecordImportAllForm(forms.Form):   
+    pass
+
+class ImportedRecordDeleteAllForm(forms.Form):   
     pass
 
 class ImportedRecordTemplateFieldForm(forms.Form):    

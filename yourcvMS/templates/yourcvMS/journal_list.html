@@ -2,6 +2,8 @@
 
 {% load material_form %}
 
+{% load isbn_issn %}
+
 
 {% block content %}
 
@@ -11,20 +13,16 @@
         <table class="stripped highlight">
         <thead>
             <th>Name</th>
-            {% comment %} <th>Name</th>
-            <th>Date of birth</th> {% endcomment %}
             <th></th>
         </thead>
         <tbody>
             {% for object in journal_list %}
             <tr class="clickable-row" data-href="{% url 'yourcvMS:journal-detail' object.id %}">
-                {% comment %} <td>{{object.login}}</td>{% endcomment %}
                 <td>
                     {{object.title}}<br/>
                     <i>{{object.publisher}}</i><br/>
-                    ISSN: {{object.issn}}, e-ISSN: {{object.eissn|default:''}}<br/>
+                    ISSN: {{object.issn|issn}}, e-ISSN: {{object.eissn|default:''|issn}}<br/>
                 </td> 
-                {% comment %} <td>{{object.date_of_birth|default_if_none:""}}</td> {% endcomment %}
                 <td>
                     <a class="waves-effect waves-light" href="{% url 'yourcvMS:journal-update' object.id %}"><i class="material-icons">edit</i></a>
                     <a class="waves-effect waves-light" href="{% url 'yourcvMS:journal-delete' object.id %}"><i class="material-icons">delete</i></a>

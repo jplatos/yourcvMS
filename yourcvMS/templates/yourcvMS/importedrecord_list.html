@@ -2,7 +2,6 @@
 
 {% load material_form %}
 
-
 {% block content %}
 
 <div class="section">
@@ -32,6 +31,7 @@
         <div class="col s12 m12 l12">
             <a class="btn" href="{% url 'yourcvMS:importedrecord-import-bib' %}"><i class="material-icons left">file_upload</i>Import BIB file</a>
             <a class="btn green" href="{% url 'yourcvMS:importedrecord-import-all' %}"><i class="material-icons left">library_add</i>Batch load</a>
+            <a class="btn red" href="{% url 'yourcvMS:importedrecord-delete-all' %}"><i class="material-icons left">delete</i>Delete all</a>
         </div>
     </div>
     {% if importedrecord_list %}

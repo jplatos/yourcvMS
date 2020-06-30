@@ -2,6 +2,9 @@ import bibtexparser
 import django.db.transaction as transaction
 from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person
 from .helpers import *
+import sys
+import traceback
+from urllib.parse import urlparse, parse_qs
 
 def extract_unique_authors(authors_list):
     result = set()
@@ -79,19 +82,38 @@ def import_records_form_bib(uploaded_file, importedsource):
 
 def get_template_by_record(record):
     templates = ImportedRecordTemplate.objects.filter(source=record.source, record_type = record.record_type)
-    
+    print(templates)
     if templates:
         for template in templates:
+            print(template)
             if template.filter_field:
                 try:
-                    field = record.importedrecordfield_set.get(name=template.field_field)
+                    field = record.importedrecordfield_set.get(name=template.filter_field)
+                    print(field)
                     if template.filter_value == field.value:
                         return template
                 except:
+                    print('Error when handling file import for projects', sys.exc_info())
+                    traceback.print_exc()
                     pass
             else:
                 return template
     return None
+
+def process_transform(value, transform):
+    steps = transform.split(' ')
+    if steps[0] == 'skip':
+        to_skip = int(steps[1])
+        # print(value+' / '+value[to_skip:])
+        return value[to_skip:]
+    elif steps[0] == 'url':
+        result = urlparse(value)
+        # print(result)
+        if result.query:
+            params = parse_qs(result.query)
+            # print(params)
+            if steps[1] in params:
+                return params[steps[1]]
 
 
 @transaction.atomic
@@ -105,7 +127,10 @@ def import_record_by_template(record, template, author_map):
     # process fields from the template and assign it to the publication
     for field in template.importedrecordtemplatefield_set.all():
         if field.record_field in record_fields:
-            pub.__dict__[field.publication_field] = record_fields[field.record_field]
+            if field.transform:
+                pub.__dict__[field.publication_field] = process_transform(record_fields[field.record_field], field.transform)
+            else:
+                pub.__dict__[field.publication_field] = record_fields[field.record_field]
     
     # process journal is required.
     if template.process_journal and 'journal' in record_fields:
@@ -179,3 +204,12 @@ def import_record_all_by_template(records, author_map):
         import_record_by_template(record, template, author_map)
 
     return
+
+
+def get_most_similar(original):
+    publications = Publication.objects.filter(imported=False)
+
+    for pub in publications:
+        if pub.title == original.title:
+            return pub
+    return None

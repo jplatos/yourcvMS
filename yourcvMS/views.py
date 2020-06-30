@@ -130,6 +130,7 @@ class PublicationApproveView(SingleObjectMixin, FormView):
         context = super().get_context_data(**kwargs)
         # context[""] = 
         return context
+
     
     def form_valid(self, form):
         try:
@@ -138,6 +139,37 @@ class PublicationApproveView(SingleObjectMixin, FormView):
             publication.save()
         except:
             print('Error when handling file approve publications', sys.exc_info())
+        return super().form_valid(form)
+
+class PublicationMergeView(FormView):
+    form_class = PublicationMergeSingleSelectForm
+    template_name = 'yourcvMS/publication_merge_select_form.html'
+    success_url = reverse_lazy('yourcvMS:publication-imported-list')
+    
+    def get_initial(self):
+        initial = super(FormView, self).get_initial()
+        if 'pk' in self.kwargs:
+            imported = get_object_or_404(Publication, pk=self.kwargs['pk'])
+            initial['imported_field'] = imported
+            most_similar = get_most_similar(imported)
+            if most_similar:
+                initial['original_field'] = most_similar
+        return initial
+
+    def form_valid(self, form):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            try:
+                original = form.cleaned_data['original_field']
+                imported = form.cleaned_data['imported_field']
+
+                self.request.session['original'] = original.id
+                self.request.session['imported'] = imported.id
+                self.success_url = reverse_lazy('yourcvMS:publication-merge-final')
+            except :
+                print('Error when handling file import for projects', sys.exc_info())
+                pass
         return super().form_valid(form)
 
 
@@ -449,6 +481,28 @@ class ImportedRecordImportAllView(FormView):
                 author_map = {x[3:]:self.request.POST[x] for x in self.request.POST.keys() if x.startswith("an_")}
                 # print(author_map)
                 import_record_all_by_template(records, author_map)
+            except :
+                print('Error when handling file import for projects', sys.exc_info())
+                traceback.print_exc()
+                pass
+        return super().form_valid(form)
+
+class ImportedRecordDeleteAllView(FormView):
+    form_class = ImportedRecordDeleteAllForm
+    template_name = 'yourcvMS/importedrecord_delete_all_form.html'
+    success_url = reverse_lazy('yourcvMS:importedrecord-list')
+    
+    @transaction.atomic
+    def form_valid(self, form):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            try:
+                records = ImportedRecord.objects.all()
+
+                for record in records:
+                    ImportedRecord.delete(record)       
+                
             except :
                 print('Error when handling file import for projects', sys.exc_info())
                 traceback.print_exc()
