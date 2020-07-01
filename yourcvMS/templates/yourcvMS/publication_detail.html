@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+{% load isbn_issn %}
+
+{% block content %}
+
+<div class="section">
+    <h5>Publication</h5>
+    
+    <table class="stripped highlight">
+    <tbody>
+        <tr>
+            <td>Publication type</td> 
+            <td>{{object.publication_type}}</td>
+        </tr>
+        <tr>
+            <td>Key</td> 
+            <td>{{object.key|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Title</td> 
+            <td>{{object.title}}</td>
+        </tr>
+        <tr>
+            <td>Authors</td> 
+            <td>{{object.authors_str}}</td>
+        </tr>
+        <tr>
+            <td>Year</td> 
+            <td>{{object.year|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Pages</td> 
+            <td>{{object.pages|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Doi</td> 
+            <td>{{object.doi|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Abstract</td> 
+            <td>{{object.abstract|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Keywords</td> 
+            <td>{{object.keywords|default:''}}</td>
+        </tr>
+        <tr>
+            <td>WoS ID</td> 
+            <td>{{object.wos_id|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Scopus ID</td> 
+            <td>{{object.scopus_id|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Wos citations</td> 
+            <td>{{object.wos_citation_count}}</td>
+        </tr>
+        <tr>
+            <td>Scopus citations</td> 
+            <td>{{object.scopus_citation_count}}</td>
+        </tr>
+        <tr>
+            <td>Imported</td> 
+            <td>{{object.imported|default:''}}</td>
+        </tr>
+        <tr>
+            <td>Journal</td> 
+            <td>{{object.journal|default:''}}</td>
+        </tr>
+        <tr>
+            <td>month</td> 
+            <td>{{object.month|default:''}}</td>
+        </tr>
+        <tr>
+            <td>number</td> 
+            <td>{{object.number|default:''}}</td>
+        </tr>
+        <tr>
+            <td>volume</td> 
+            <td>{{object.volume|default:''}}</td>
+        </tr>
+        <tr>
+            <td>conference</td> 
+            <td>{{object.conference|default:''}}</td>
+        </tr>
+        <tr>
+            <td>organized_from</td> 
+            <td>{{object.organized_from|default:''}}</td>
+        </tr>
+        <tr>
+            <td>organized_to</td> 
+            <td>{{object.organized_to|default:''}}</td>
+        </tr>
+        <tr>
+            <td>venue</td> 
+            <td>{{object.venue|default:''}}</td>
+        </tr>
+        <tr>
+            <td>series</td> 
+            <td>{{object.series|default:''}}</td>
+        </tr>
+        <tr>
+            <td>booktitle</td> 
+            <td>{{object.booktitle|default:''}}</td>
+        </tr>
+        <tr>
+            <td>publisher</td> 
+            <td>{{object.publisher|default:''}}</td>
+        </tr>
+        <tr>
+            <td>isbn</td> 
+            <td>{{object.isbn|default:''}}</td>
+        </tr>
+        <tr>
+            <td>issn</td> 
+            <td>{{object.issn|default:''|issn}}</td>
+        </tr>
+
+
+
+    
+
+        {% comment %} {% for field in object.importedrecordfield_set.all %}
+        <tr>
+            <td>{{field.name}}</td> 
+            <td>{{field.value}}</td>
+        </tr>
+        {% endfor %} {% endcomment %}
+    </tbody>
+    </table>
+    <a href="{% url 'yourcvMS:importedrecord-list' %}">Back to list</a>
+</div>
+
+{% endblock %}

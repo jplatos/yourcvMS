@@ -22,8 +22,6 @@ urlpatterns = [
     path('publication/<int:pk>/merge', views.PublicationMergeView.as_view(), name='publication-merge'),
     
     path('publication/imported-list', views.PublicationImportedListView.as_view(), name='publication-imported-list'),
-    path('publication/remove-by-name', views.PublicationRemoveByNameView.as_view(), name='publication-remove-by-name'),
-    path('publication/merge-select', views.PublicationMergeSelectView.as_view(), name='publication-merge-select'),
     path('publication/merge-final', views.PublicationMergeFinalView.as_view(), name='publication-merge-final'),
     path('publication/approve-all', views.PublicationApproveAllView.as_view(), name='publication-approve-all'),
 

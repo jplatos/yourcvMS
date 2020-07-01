@@ -82,14 +82,14 @@ def import_records_form_bib(uploaded_file, importedsource):
 
 def get_template_by_record(record):
     templates = ImportedRecordTemplate.objects.filter(source=record.source, record_type = record.record_type)
-    print(templates)
+    # print(templates)
     if templates:
         for template in templates:
             print(template)
             if template.filter_field:
                 try:
                     field = record.importedrecordfield_set.get(name=template.filter_field)
-                    print(field)
+                    # print(field)
                     if template.filter_value == field.value:
                         return template
                 except:
@@ -104,8 +104,18 @@ def process_transform(value, transform):
     steps = transform.split(' ')
     if steps[0] == 'skip':
         to_skip = int(steps[1])
-        # print(value+' / '+value[to_skip:])
-        return value[to_skip:]
+        value = value[to_skip:]
+        if len(steps)>2:
+            if steps[2] == 'ends':
+                end_symbol = steps[3]
+                if end_symbol in value:
+                    value = value[:value.index(end_symbol)]
+        return value.strip()
+    elif steps[0] == 'starts':
+        end_symbol = steps[1]
+        if end_symbol in value:
+            value = value[value.index(end_symbol)+1:]
+        return value.strip()
     elif steps[0] == 'url':
         result = urlparse(value)
         # print(result)
@@ -113,7 +123,11 @@ def process_transform(value, transform):
             params = parse_qs(result.query)
             # print(params)
             if steps[1] in params:
-                return params[steps[1]]
+                values = params[steps[1]]
+                if isinstance(values, list):
+                    return values[0]
+                else:
+                    return values
 
 
 @transaction.atomic

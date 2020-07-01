@@ -8,10 +8,6 @@ class PersonMergeForm(forms.Form):
     primary_field = forms.ModelChoiceField(queryset=Person.objects.all())
     other_field = forms.ModelChoiceField(queryset=Person.objects.all())
 
-class PublicationMergeSelectForm(forms.Form):
-    imported_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=True))
-    original_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=False))
-
 class PublicationMergeSingleSelectForm(forms.Form):
     imported_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=True), disabled=True)
     original_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=False))

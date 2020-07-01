@@ -7,8 +7,6 @@
 
 <div class="section">
     <h5>Imported Publications ({{publication_list.count}})</h5>
-    <a class="waves-effect waves-light btn" href="{% url 'yourcvMS:publication-remove-by-name' %}">Remove by name</a>
-    <a class="waves-effect waves-light btn" href="{% url 'yourcvMS:publication-merge-select' %}">Merge</a>
     <a class="waves-effect waves-light btn green" href="{% url 'yourcvMS:publication-approve-all' %}"><i class="material-icons left">check_box</i>Approve all</a>
     {% if publication_list %}
         <table class="stripped highlight">
@@ -20,7 +18,7 @@
         </thead>
         <tbody>
             {% for object in publication_list %}
-            <tr {% comment %}class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}"{% endcomment %}>
+            <tr class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}">
                 <td>
                     {{object.title}}<br/>
                     <i>{{object.authors_str}}</i><br/>

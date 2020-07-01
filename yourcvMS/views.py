@@ -106,14 +106,11 @@ class PublicationImportedListView(ListView):
 class PublicationUpdateView(UpdateView):
     model = Publication
     fields = [
-        'publication_type', 'key', 'title', 'book_title', 'year', 'pages', 'journal', 'month', 'number', 'volume', 'url', 'doi', 'abstract', 'keywords', 'isbn', 'issn', 
-        'address', 'annotation', 'chapter', 'cross_ref', 'edition', 'institution', 'note', 'organization', 'publisher', 'school', 'series', 'specific_type', 'wos_id', 
-        'scopus_id', 'wos_citation_count', 'scopus_citation_count', 'imported']
-
+        'publication_type', 'key', 'title', 'year', 'pages', 'doi', 'abstract', 'keywords', 'wos_id', 'scopus_id', 'wos_citation_count', 'scopus_citation_count', 'imported', 'journal', 'month', 'number', 'volume', 'conference', 'organized_from', 'organized_to', 'venue', 'series', 'booktitle', 'publisher', 'isbn', 'issn']
     success_url = reverse_lazy('yourcvMS:publication-list')
 
 class PublicationDetailView(DetailView):
-    model = Publication
+    model = Publication    
 
 class PublicationDeleteView(DeleteView):
     model = Publication
@@ -197,28 +194,6 @@ class PublicationRemoveByNameView(View):
         remove_imported_by_name()
         return redirect(reverse('yourcvMS:publication-imported-list'))
 
-class PublicationMergeSelectView(FormView):
-    form_class = PublicationMergeSelectForm
-    template_name = 'yourcvMS/publication_merge_select_form.html'
-    success_url = reverse_lazy('yourcvMS:publication-imported-list')
-
-    def form_valid(self, form):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            try:
-                original = form.cleaned_data['original_field']
-                imported = form.cleaned_data['imported_field']
-
-                self.request.session['original'] = original.id
-                self.request.session['imported'] = imported.id
-                self.success_url = reverse_lazy('yourcvMS:publication-merge-final')
-            except :
-                print('Error when handling file import for projects', sys.exc_info())
-                pass
-        return super().form_valid(form)
-
-
 class PublicationMergeFinalView(FormView):
     form_class = PublicationMergeFinalForm
     template_name = 'yourcvMS/publication_merge_final_form.html'
@@ -242,13 +217,10 @@ class PublicationMergeFinalView(FormView):
                 continue
             if k.startswith('_') or k in ['id', 'imported', 'created', 'modified']:
                 continue
-            if k.endswith('_id'):
-                continue
             if i_dict[k] is None:
                 continue
             fields.append((k.title(), k, v, i_dict[k]))
         context['fields'] = fields
-
         return context
 
 
@@ -270,19 +242,16 @@ class PublicationMergeFinalView(FormView):
                     continue
                 if k.startswith('_') or k in ['id', 'imported', 'created', 'modified']:
                     continue
-                if k.endswith('_id'):
-                    continue
                 if i_dict[k] is None:
                     continue
-                fields[k] = (v, i_dict[k])
-            
+                fields[k] = (v, i_dict[k])            
             
             for k, v in self.request.POST.items():
                 if k.startswith('csrf'):
                     continue
                 original.__dict__[k] = fields[k][int(v)]
                 original.save()
-                Publication.delete(imported)
+            Publication.delete(imported)
         except :
             print('Error when handling file import for projects', sys.exc_info())
             pass

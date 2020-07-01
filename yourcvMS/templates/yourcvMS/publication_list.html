@@ -11,20 +11,16 @@
         <table class="stripped highlight">
         <thead>
             <th>Name</th>
-            {% comment %} <th>Name</th>
-            <th>Date of birth</th> {% endcomment %}
             <th></th>
         </thead>
         <tbody>
             {% for object in publication_list %}
-            <tr {% comment %}class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}"{% endcomment %}>
-                {% comment %} <td>{{object.login}}</td>{% endcomment %}
+            <tr class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}">
                 <td>
                     {{object.title}}<br/>
                     <i>{{object.authors_str}}</i><br/>
                     {{object.source_str}}<br/>
                 </td> 
-                {% comment %} <td>{{object.date_of_birth|default_if_none:""}}</td> {% endcomment %}
                 <td>
                     <a class="waves-effect waves-light" href="{% url 'yourcvMS:publication-update' object.id %}"><i class="material-icons">edit</i></a>
                     <a class="waves-effect waves-light red-text" href="{% url 'yourcvMS:publication-delete' object.id %}"><i class="material-icons">delete</i></a>
