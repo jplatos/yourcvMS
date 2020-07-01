@@ -367,11 +367,17 @@ class ImportedRecordImportView(SingleObjectMixin, FormView):
     success_url = reverse_lazy('yourcvMS:importedrecord-list')
     model = ImportedRecord
 
+    def get_initial(self):
+        self.object = self.get_object()
+        initial = super(FormView, self).get_initial()
+        initial["template_field"] = get_template_by_record(self.object)
+        
+        return initial
+
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         context = super().get_context_data(**kwargs)
-        context["template"] = get_template_by_record(self.object)
-
+        
         authors_field = self.object.importedrecordfield_set.get(name='author')
         if authors_field:
             authors_str = authors_field.value
@@ -388,7 +394,7 @@ class ImportedRecordImportView(SingleObjectMixin, FormView):
                     author_person.append((author, 0))
             context['authors'] = author_person
         context['persons'] = Person.objects.all()
-        # print(context)
+        
         return context
 
     def form_valid(self, form):
@@ -397,10 +403,10 @@ class ImportedRecordImportView(SingleObjectMixin, FormView):
         if form.is_valid():
             try:
                 record = self.get_object()
-                template = get_template_by_record(record)
-
+                template = form.cleaned_data["template_field"]
+                # print(template)
                 author_map = {x[3:]:self.request.POST[x] for x in self.request.POST.keys() if x.startswith("an_")}
-                print(author_map)
+                # print(author_map)
                 import_record_by_template(record, template, author_map)
             except :
                 print('Error when handling file import for projects', sys.exc_info())

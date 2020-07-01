@@ -21,7 +21,7 @@ class ImportedRecordImportBibForm(forms.Form):
     source_field = forms.ModelChoiceField(queryset=ImportedSource.objects.all())
 
 class ImportedRecordImportForm(forms.Form):    
-    # template_field = forms.ModelChoiceField(queryset=ImportedRecordTemplate.objects.all())
+    template_field = forms.ModelChoiceField(queryset=ImportedRecordTemplate.objects.all())
     pass
 
 class ImportedRecordImportAllForm(forms.Form):   

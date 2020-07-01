@@ -85,7 +85,7 @@ def get_template_by_record(record):
     # print(templates)
     if templates:
         for template in templates:
-            print(template)
+            # print(template)
             if template.filter_field:
                 try:
                     field = record.importedrecordfield_set.get(name=template.filter_field)
@@ -175,6 +175,11 @@ def import_record_by_template(record, template, author_map):
     if pub.title:
         pub.title = titlelize(pub.title)
 
+    if pub.isbn:
+        pub.isbn = normalize_isbn(pub.isbn)
+    if pub.issn:
+        pub.issn = normalize_issn(pub.issn)
+        
     pub.imported = True
     pub.save()
 
