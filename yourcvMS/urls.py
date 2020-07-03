@@ -32,7 +32,6 @@ urlpatterns = [
     
 
     path('journal/list', views.JournalListView.as_view(), name='journal-list'),
-    path('journal/normalize', views.JournalNormalizeView.as_view(), name='journal-normalize'),
     path('journal/<int:pk>', views.JournalDetailView.as_view(), name='journal-detail'),
     path('journal/<int:pk>/update', views.JournalUpdateView.as_view(), name='journal-update'),
     path('journal/<int:pk>/delete', views.JournalDeleteView.as_view(), name='journal-delete'),

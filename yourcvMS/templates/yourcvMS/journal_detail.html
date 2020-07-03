@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% load material_form %}
+
+{% load isbn_issn %}
+
+{% block content %}
+
+<div class="section">
+    <h5>Journal</h5>
+    
+    <table class="stripped highlight">
+        <tbody>
+            <tr>
+                <td>Title</td> 
+                <td>{{object.title}}</td>
+            </tr>
+            <tr>
+                <td>Publisher</td> 
+                <td>{{object.publisher|default:''}}</td>
+            </tr>
+            <tr>
+                <td>ISSN</td> 
+                <td>{{object.issn|default:''}}</td>
+            </tr>
+            <tr>
+                <td>E-ISSN</td> 
+                <td>{{object.eissn|default:''}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <h6>Publications</h6> 
+    <table>
+        <tbody>
+            {% for pub in object.publication_set.all %}
+            <tr>
+                <td>
+                    {{pub.title}}<br/>
+                    <i>{{pub.authors_str}}</i><br/>
+                    {{pub.source_str}}<br/>
+                </td> 
+            </tr>
+            {% endfor %}        
+        </tbody>
+    </table>
+    <a href="{% url 'yourcvMS:journal-list' %}">Back to list</a>
+</div>
+
+{% endblock %}

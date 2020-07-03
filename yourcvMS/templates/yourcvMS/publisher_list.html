@@ -6,22 +6,23 @@
 {% block content %}
 
 <div class="section">
-    <h5>Publishers</h5>
+    <h5>Publishers ({{ publisher_list.count }})</h5>
+    <div class="row">
+        <div class="col s12 m12 l12">
+            <a class="btn" href="{% url 'yourcvMS:publisher-normalize' %}"><i class="material-icons left">format_size</i>Normalize names and addresses</a>
+        </div>
+    </div>
     {% if publisher_list %}
         <table class="stripped highlight">
-        <thead>
-            <th>Name</th>
-            {% comment %} <th>Name</th>
-            <th>Date of birth</th> {% endcomment %}
-            <th></th>
-        </thead>
+        
         <tbody>
             {% for object in publisher_list %}
             <tr class="clickable-row" data-href="{% url 'yourcvMS:publisher-detail' object.id %}">
                 {% comment %} <td>{{object.login}}</td>{% endcomment %}
                 <td>
-                    {{object.name}}<br/>
-                    <i>{{object.address}}</i>
+                    <b>{{object.name}}</b><br/>
+                    <i>{{object.address}}</i><br/>
+                    Journals: {{object.journal_set.all.count}}
                 </td> 
                 {% comment %} <td>{{object.date_of_birth|default_if_none:""}}</td> {% endcomment %}
                 <td>
@@ -35,7 +36,6 @@
     {% else %}
     <p> No publisher found.</p>
     {% endif %}
-    <a href="{% url 'yourcvMS:publisher-normalize' %}">Normalize titles</a>
 </div>
 
 {% endblock %}

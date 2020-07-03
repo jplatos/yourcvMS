@@ -21,31 +21,12 @@ def merge_persons(primary, other):
         author.save()
     Person.delete(other)
 
-def normalize_journal_titles():
-    print('Normalize titles journal')
-    for journal in Journal.objects.all():
-        print(journal.title+ ' - ', end='')
-        journal.title = journal.title.title()
-        print(journal.title)
-        if '\&' in journal.title:
-            journal.title = journal.title.replace('\&', '&')
-        journal.save()
-
 def normalize_publisher_texts():
     for publisher in Publisher.objects.all():
-        publisher.name = publisher.name.title()
-        publisher.address = publisher.address.title()
+        publisher.name = titlelize(publisher.name)
+        if publisher.address:
+            publisher.address = titlelize(publisher.address)
         publisher.save()
-
-def remove_imported_by_name():
-    name_pub = {}
-    for pub in Publication.objects.filter(imported=False):
-        name_pub[pub.title.lower()] = pub
-
-    for pub in Publication.objects.filter(imported=True):
-        key = pub.title.lower()
-        if key in name_pub:
-            Publication.delete(pub)
 
 
 @transaction.atomic
