@@ -346,7 +346,7 @@ class ImportedRecordImportBibView(FormView):
 
 class ImportedRecordDetailView(DetailView):
     model = ImportedRecord
-    fields = ['source', 'record_type']
+    
 
 class ImportedRecordDeleteView(DeleteView):
     model = ImportedRecord

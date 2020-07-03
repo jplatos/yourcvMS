@@ -10,7 +10,7 @@ class PersonMergeForm(forms.Form):
 
 class PublicationMergeSingleSelectForm(forms.Form):
     imported_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=True), disabled=True)
-    original_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=False))
+    original_field = forms.ModelChoiceField(queryset=Publication.objects.filter(imported=False).order_by('title'))
 
 
 class PublicationMergeFinalForm(forms.Form):    

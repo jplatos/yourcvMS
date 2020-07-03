@@ -179,7 +179,7 @@ def import_record_by_template(record, template, author_map):
         pub.isbn = normalize_isbn(pub.isbn)
     if pub.issn:
         pub.issn = normalize_issn(pub.issn)
-        
+
     pub.imported = True
     pub.save()
 
@@ -199,8 +199,11 @@ def import_record_by_template(record, template, author_map):
                 person = Person.objects.get(pk=person_id)
                 
             pub.author_set.create(index=idx, person=person)
-
-            altname, _ = AltName.objects.get_or_create(name=author, defaults={'person':person})
+            
+            # AltName.objects.create(name=author, person=person)
+            altname, created = AltName.objects.get_or_create(name__exact=author, defaults={'name':author, 'person':person})
+            if created:
+                print(f'Created {author} - {person}')
 
     # copy all record fields to publication fields for later processing
     for name, value in record_fields.items():

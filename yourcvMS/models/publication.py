@@ -5,7 +5,7 @@ from . import TimeTracked, PublicationType, Journal
 class Publication(TimeTracked):
 
     class Meta:
-        ordering = ['-year', 'title']
+        ordering = ['-year', 'journal', 'booktitle', 'title']
 
     # type of the publication
     publication_type = models.ForeignKey(PublicationType, on_delete=models.PROTECT)

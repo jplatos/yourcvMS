@@ -31,10 +31,25 @@
                         </td>
                     </tr>
                     {% endfor %}
+                    
                 </tbody>
             </table>
             <button type="submit" class="btn">Import publication</button>
-            <a class="btn" href="{% url 'yourcvMS:importedrecord-list' %}">Cancel</a>                    
+            <a class="btn" href="{% url 'yourcvMS:importedrecord-list' %}">Cancel</a>    
+            <table>
+                <tbody>
+                    <tr>
+                        <td><b>Fields:</b></td>
+                        <td></td>
+                    </tr>            
+                    {% for field in object.importedrecordfield_set.all %}
+                    <tr>
+                        <td>{{field.name}}</td> 
+                        <td>{{field.value}}</td>
+                    </tr>
+                    {% endfor %}   
+                </tbody>
+            <table>             
         </form>
     </div>
 </div>
