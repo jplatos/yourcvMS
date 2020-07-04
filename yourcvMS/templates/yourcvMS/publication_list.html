@@ -9,10 +9,7 @@
     <h5>Publications ({{publication_list.count}})</h5>
     {% if publication_list %}
         <table class="stripped highlight">
-        <thead>
-            <th>Name</th>
-            <th></th>
-        </thead>
+        
         <tbody>
             {% for object in publication_list %}
             <tr class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}">
