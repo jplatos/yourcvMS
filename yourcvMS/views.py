@@ -187,13 +187,6 @@ class PublicationApproveAllView(FormView):
         return super().form_valid(form)
 
 
-class PublicationRemoveByNameView(View):
-
-    def get(self, request, *args, **kwargs):
-        print('Remove imported by name', flush=True)
-        remove_imported_by_name()
-        return redirect(reverse('yourcvMS:publication-imported-list'))
-
 class PublicationMergeFinalView(FormView):
     form_class = PublicationMergeFinalForm
     template_name = 'yourcvMS/publication_merge_final_form.html'
@@ -263,13 +256,6 @@ class PublicationMergeFinalView(FormView):
 #######################################
 class JournalListView(ListView):
     model = Journal
-
-class JournalNormalizeView(View):
-
-    def get(self, request, *args, **kwargs):
-        print('Normalize titles journal', flush=True)
-        normalize_journal_titles()
-        return redirect(reverse('yourcvMS:journal-list'))
 
     
 class JournalUpdateView(UpdateView):
