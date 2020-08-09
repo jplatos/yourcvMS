@@ -270,6 +270,15 @@ class JournalDeleteView(DeleteView):
     model = Journal
     success_url = reverse_lazy('yourcvMS:journal-list')
 
+class JournalGetRanking(RedirectView):
+    permanent = False
+    query_string = True
+    pattern_name = 'yourcvMS:journal-detail'
+
+    def get_redirect_url(self, *args, **kwargs):
+        journal = get_object_or_404(Journal, pk=kwargs['pk'])
+        get_rankings(journal)
+        return super().get_redirect_url(*args, **kwargs)
 
 #######################################
 #  Publisher

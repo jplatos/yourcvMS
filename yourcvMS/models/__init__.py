@@ -3,7 +3,7 @@ from .time_tracked import TimeTracked
 from .publication_type import PublicationType
 from .person import Person
 from .publisher import Publisher
-from .journal import Journal
+from .journal import Journal, JournalYearRank, JournalSourceYearRank, JournalSourceYearCategory, RankingSource
 from .publication import Publication
 from .publication_field import PublicationField
 from .author import Author

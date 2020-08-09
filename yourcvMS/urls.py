@@ -35,6 +35,7 @@ urlpatterns = [
     path('journal/<int:pk>', views.JournalDetailView.as_view(), name='journal-detail'),
     path('journal/<int:pk>/update', views.JournalUpdateView.as_view(), name='journal-update'),
     path('journal/<int:pk>/delete', views.JournalDeleteView.as_view(), name='journal-delete'),
+    path('journal/<int:pk>/get-ranking', views.JournalGetRanking.as_view(), name='journal-get-ranking'),
 
     path('publisher/list', views.PublisherListView.as_view(), name='publisher-list'),
     path('publisher/normalize', views.PublisherNormalizeView.as_view(), name='publisher-normalize'),

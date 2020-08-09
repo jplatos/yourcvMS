@@ -1,10 +1,12 @@
 import bibtexparser
 import django.db.transaction as transaction
-from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person
+from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person, JournalYearRank, JournalSourceYearRank, JournalSourceYearCategory, RankingSource
 from .helpers import *
 import sys
 import traceback
 from urllib.parse import urlparse, parse_qs
+import urllib.request
+import xml.etree.ElementTree as ET
 
 def extract_unique_authors(authors_list):
     result = set()
@@ -216,3 +218,84 @@ def get_most_similar(original):
         if pub.title == original.title:
             return pub
     return None
+
+
+
+def get_journal_ranking_from_service_xml(issn, year):
+    try:
+        # url = f'https://db.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year={year}'
+        url = f'http://dbsys.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year={year}'
+        print(url)
+        contents = urllib.request.urlopen(url).read()
+        # print(contents)
+        return contents
+    except:
+        return None
+
+def process_journal_ranking_xml(data, journal, year):
+    root = ET.fromstring(data)
+    
+    for element in root:
+        if element.tag in ('ScimagoJR', 'WebOfScience'):
+            ranking_name = element.tag
+            factor_name = element[0].tag
+            ranking, created = RankingSource.objects.get_or_create(name=ranking_name, factor_name=factor_name)
+            print(ranking)
+            factor = float(element[0].text)
+            categories = element[1]
+            # year = element[2]
+            rank_avg = int(element[3].text)
+            number_journals = int(element[4].text)
+            centil_avg = int(element[5].text)
+            jsyr, created = JournalSourceYearRank.objects.get_or_create(journal=journal, year=year, source=ranking, 
+                defaults={'centil_average':centil_avg, 'rank_average':rank_avg, 'number_of_journals':number_journals, 'factor':factor})
+            jsyr.centil_average = centil_avg
+            jsyr.rank_average = rank_avg
+            jsyr.number_of_journals = number_journals
+            jsyr.factor = factor
+            jsyr.save()
+
+            for category in categories:
+                name = category[0].text
+                journal_rank = int(category[1].text)
+                number_of_journals = int(category[2].text)
+                centil = int(category[3].text)
+                jsyc, created = JournalSourceYearCategory.objects.get_or_create(journal=journal, year=year, source=ranking, category=name, 
+                    defaults = {'centil':centil, 'rank':journal_rank, 'number_of_journals':number_of_journals})
+                jsyc.centil = centil
+                jsyc.rank = journal_rank
+                jsyc.number_of_journals = number_of_journals
+                jsyc.save()
+            
+        if element.tag=='Summary':
+            summary = element
+            jyr = JournalYearRank(journal=journal, year=year)
+            for child in summary:
+                if child.tag=='NumberOfJournalsAvg':
+                    jyr.number_of_journals = int(child.text)
+                if child.tag=='RankAvg':
+                    jyr.rank_average = int(child.text)
+                if child.tag=='CentilAvg':
+                    jyr.centil_average = int(child.text)
+            jyr.save()
+
+
+
+
+def get_rankings(journal):
+    years = set()
+    for publication in journal.publication_set.all():
+        years.add(publication.year)
+    yearranking = {x.year:x for x in journal.journalyearrank_set.all()}
+    print(f'Year: {years}')
+    print(f'Year ranking: {yearranking}')
+    for year in sorted(years):
+        if year in yearranking:
+            continue
+        data = get_journal_ranking_from_service_xml(journal.issn, year)
+        if not data:
+            year = year-1
+            if year in yearranking: continue
+            data = get_journal_ranking_from_service_xml(journal.issn, year)
+        if data:
+            process_journal_ranking_xml(data, journal, year)

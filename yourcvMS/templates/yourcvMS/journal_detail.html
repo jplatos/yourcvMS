@@ -30,21 +30,55 @@
         </tbody>
     </table>
 
+    <div class="row">
+        <div class="col s12">
+            <ul class="tabs">
+                <li class="tab col s3"><a href="#publications">Publications</a></li>
+                <li class="tab col s3"><a href="#rankings">Rankings</a></li>
+                {% comment %} <li class="tab col s3"><a class="active" href="#test2">Test 2</a></li>
+                <li class="tab col s3 disabled"><a href="#test3">Disabled Tab</a></li>
+                <li class="tab col s3"><a href="#test4">Test 4</a></li> {% endcomment %}
+            </ul>
+        </div>
+        <div id="publications" class="col s12">
+            <table>
+                <tbody>
+                    {% for pub in object.publication_set.all %}
+                    <tr>
+                        <td>
+                            {{pub.title}}<br/>
+                            <i>{{pub.authors_str}}</i><br/>
+                            {{pub.source_str}}<br/>
+                        </td> 
+                    </tr>
+                    {% endfor %}        
+                </tbody>
+            </table>
+        </div>
+        <div id="rankings" class="col s12">
+            <br/>
+            <a class="btn" href="{% url 'yourcvMS:journal-get-ranking' object.id %}">Get ranking from service</a>
+            <ul class="collapsible">
+                {% for jyr in object.journalyearrank_set.all %}
+                <li>
+                    <div class="collapsible-header"><b>{{jyr.year}}</b> - C-{{jyr.centil_average}}, D-{{jyr.decil_average}}, Q{{jyr.quartil_average}} ({{jyr.rank_average}}/{{jyr.number_of_journals}})</div>
+                    <div class="collapsible-body">
+                        <span>
+                            <ul>
+                                <li>Centil = {{jyr.centil_average}}</li>
+                                <li>Decil = {{jyr.decil_average}}</li>
+                                <li>Quartil = {{jyr.quartil_average}}</li>
+                            </ul>
+                        </span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 
-    <h6>Publications</h6> 
-    <table>
-        <tbody>
-            {% for pub in object.publication_set.all %}
-            <tr>
-                <td>
-                    {{pub.title}}<br/>
-                    <i>{{pub.authors_str}}</i><br/>
-                    {{pub.source_str}}<br/>
-                </td> 
-            </tr>
-            {% endfor %}        
-        </tbody>
-    </table>
+    
+    
     <a href="{% url 'yourcvMS:journal-list' %}">Back to list</a>
 </div>
 
