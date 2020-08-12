@@ -1,12 +1,13 @@
 import bibtexparser
 import django.db.transaction as transaction
-from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person, JournalYearRank, JournalSourceYearRank, JournalSourceYearCategory, RankingSource
+from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person, JournalYearRank, JournalSourceYearRank, JournalSourceYearCategory, RankingSource, PublicationType
 from .helpers import *
 import sys
 import traceback
 from urllib.parse import urlparse, parse_qs
 import urllib.request
 import xml.etree.ElementTree as ET
+from datetime import datetime
 
 def extract_unique_authors(authors_list):
     result = set()
@@ -240,7 +241,8 @@ def process_journal_ranking_xml(data, journal, year):
             ranking_name = element.tag
             factor_name = element[0].tag
             ranking, created = RankingSource.objects.get_or_create(name=ranking_name, factor_name=factor_name)
-            print(ranking)
+            # print(ranking)
+            # print(element[0].text)
             factor = float(element[0].text)
             categories = element[1]
             # year = element[2]
@@ -299,3 +301,34 @@ def get_rankings(journal):
             data = get_journal_ranking_from_service_xml(journal.issn, year)
         if data:
             process_journal_ranking_xml(data, journal, year)
+
+
+def get_publication_quartiles_deciles():
+    try:
+        journal_type = PublicationType.objects.get(name__icontains='journal')
+        print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=journal_type)
+    
+    quartiles = [0 for x in range(4)]
+    deciles = [0 for x in range(10)]
+    
+    for article in articles:
+        year = article.year
+        journal = article.journal
+        ranks = JournalYearRank.objects.filter(journal=journal, year__lte=year).order_by('-year')
+        
+        if ranks and ranks.count()>0:
+            current = ranks[0]
+            if current.year==year or current.year==year-1:
+                quartiles[current.quartil_average-1] += 1
+                deciles[current.decil_average-1] += 1
+            else:
+                print(journal, year)
+        else:
+            print(journal, year)
+
+    return quartiles, deciles

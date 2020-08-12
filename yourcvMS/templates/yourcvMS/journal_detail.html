@@ -57,23 +57,39 @@
         </div>
         <div id="rankings" class="col s12">
             <br/>
-            <a class="btn" href="{% url 'yourcvMS:journal-get-ranking' object.id %}">Get ranking from service</a>
             <ul class="collapsible">
                 {% for jyr in object.journalyearrank_set.all %}
                 <li>
-                    <div class="collapsible-header"><b>{{jyr.year}}</b> - C-{{jyr.centil_average}}, D-{{jyr.decil_average}}, Q{{jyr.quartil_average}} ({{jyr.rank_average}}/{{jyr.number_of_journals}})</div>
+                    <div class="collapsible-header">
+                        <b>{{jyr.year}}</b> - C{{jyr.centil_average}}, D{{jyr.decil_average}}, Q{{jyr.quartil_average}} ({{jyr.rank_average}}/{{jyr.number_of_journals}})
+                        <a class="waves-effect waves-light red-text" href="{% url 'yourcvMS:journal-year-rank-delete' jyr.id %}"><i class="material-icons">delete</i></a>
+                    </div>
                     <div class="collapsible-body">
-                        <span>
-                            <ul>
-                                <li>Centil = {{jyr.centil_average}}</li>
-                                <li>Decil = {{jyr.decil_average}}</li>
-                                <li>Quartil = {{jyr.quartil_average}}</li>
-                            </ul>
-                        </span>
+                        <div class="row">
+                            <div class="col s4">
+                                <table class="striped">
+                                    <tbody>
+                                    <tr>
+                                        <td>Centil</td>
+                                        <td>{{jyr.centil_average}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Decil</td>
+                                        <td>{{jyr.decil_average}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Quartil</td>
+                                        <td>{{jyr.quartil_average}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </li>
                 {% endfor %}
             </ul>
+            <a class="btn" href="{% url 'yourcvMS:journal-get-ranking' object.id %}">Get ranking from service</a>
         </div>
     </div>
 

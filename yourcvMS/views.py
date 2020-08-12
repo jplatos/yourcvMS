@@ -109,6 +109,16 @@ class PublicationUpdateView(UpdateView):
         'publication_type', 'key', 'title', 'year', 'pages', 'doi', 'abstract', 'keywords', 'wos_id', 'scopus_id', 'wos_citation_count', 'scopus_citation_count', 'imported', 'journal', 'month', 'number', 'volume', 'conference', 'organized_from', 'organized_to', 'venue', 'series', 'booktitle', 'publisher', 'isbn', 'issn']
     success_url = reverse_lazy('yourcvMS:publication-list')
 
+class PublicationSummaryView(TemplateView):
+    template_name = 'yourcvMS/publication_summary.html'
+    success_url = reverse_lazy('yourcvMS:publication-summary')
+
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context['quartiles'], context['deciles'] = get_publication_quartiles_deciles()
+        print(context)
+        return context
+
 class PublicationDetailView(DetailView):
     model = Publication    
 
@@ -279,6 +289,14 @@ class JournalGetRanking(RedirectView):
         journal = get_object_or_404(Journal, pk=kwargs['pk'])
         get_rankings(journal)
         return super().get_redirect_url(*args, **kwargs)
+
+class JournalYearRankDeleteView(DeleteView):
+    model = JournalYearRank
+    
+    def get_success_url(self):
+        return reverse_lazy('yourcvMS:journal-detail', kwargs = {'pk': self.object.journal.id })
+
+
 
 #######################################
 #  Publisher

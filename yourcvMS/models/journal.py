@@ -20,6 +20,9 @@ class RankingSource(TimeTracked):
     factor_name = models.CharField(max_length=100, blank=True, null=True)
 
 class JournalYearRank(TimeTracked):
+    class Meta:
+        ordering = ['-year']
+        
     journal = models.ForeignKey(Journal, on_delete=models.PROTECT)
     year = models.IntegerField()
     centil_average = models.IntegerField()

@@ -19,7 +19,7 @@
                     <b>{{object.title}}</b><br/>
                     <i>{{object.publisher}}</i><br/>
                     ISSN: {{object.issn|issn}}, e-ISSN: {{object.eissn|default:''|issn}}<br/>
-                    Publications: {{object.publication_set.all.count}}
+                    Publications: {{object.publication_set.all.count}}         Rankings: {{object.journalyearrank_set.all.count}}
                 </td> 
                 <td>
                     <a class="waves-effect waves-light" href="{% url 'yourcvMS:journal-update' object.id %}"><i class="material-icons">edit</i></a>

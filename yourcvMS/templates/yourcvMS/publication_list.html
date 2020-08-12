@@ -7,6 +7,9 @@
 
 <div class="section">
     <h5>Publications ({{publication_list.count}})</h5>
+    <div class="row">
+        <a class="btn" href="{% url 'yourcvMS:publication-summary'%}">Publication summary</a>
+    </div>
     {% if publication_list %}
         <table class="stripped highlight">
         

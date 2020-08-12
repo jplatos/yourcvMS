@@ -15,6 +15,7 @@ urlpatterns = [
     path('person/<int:pk>/delete', views.PersonDeleteView.as_view(), name='person-delete'),
 
     path('publication/list', views.PublicationListView.as_view(), name='publication-list'),
+    path('publication/summary', views.PublicationSummaryView.as_view(), name='publication-summary'),
     path('publication/<int:pk>', views.PublicationDetailView.as_view(), name='publication-detail'),
     path('publication/<int:pk>/update', views.PublicationUpdateView.as_view(), name='publication-update'),
     path('publication/<int:pk>/delete', views.PublicationDeleteView.as_view(), name='publication-delete'),
@@ -24,7 +25,7 @@ urlpatterns = [
     path('publication/imported-list', views.PublicationImportedListView.as_view(), name='publication-imported-list'),
     path('publication/merge-final', views.PublicationMergeFinalView.as_view(), name='publication-merge-final'),
     path('publication/approve-all', views.PublicationApproveAllView.as_view(), name='publication-approve-all'),
-
+    
     path('publication-type/list', views.PublicationTypeListView.as_view(), name='publicationtype-list'),
     path('publication-type/create', views.PublicationTypeCreateView.as_view(), name='publicationtype-create'),
     path('publication-type/<int:pk>/update', views.PublicationTypeUpdateView.as_view(), name='publicationtype-update'),
@@ -36,6 +37,8 @@ urlpatterns = [
     path('journal/<int:pk>/update', views.JournalUpdateView.as_view(), name='journal-update'),
     path('journal/<int:pk>/delete', views.JournalDeleteView.as_view(), name='journal-delete'),
     path('journal/<int:pk>/get-ranking', views.JournalGetRanking.as_view(), name='journal-get-ranking'),
+
+    path('journal-year-rank/<int:pk>/delete', views.JournalYearRankDeleteView.as_view(), name='journal-year-rank-delete'),
 
     path('publisher/list', views.PublisherListView.as_view(), name='publisher-list'),
     path('publisher/normalize', views.PublisherNormalizeView.as_view(), name='publisher-normalize'),
