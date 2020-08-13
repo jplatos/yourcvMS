@@ -1,5 +1,6 @@
 import bibtexparser
 import django.db.transaction as transaction
+from django.db.models import Count
 from yourcvMS.models import Publication, Journal, Publisher, PublicationField, ImportedRecord, ImportedRecordField, ImportedRecordType, ImportedRecordTemplate, AltName, Person, JournalYearRank, JournalSourceYearRank, JournalSourceYearCategory, RankingSource, PublicationType
 from .helpers import *
 import sys
@@ -303,10 +304,18 @@ def get_rankings(journal):
             process_journal_ranking_xml(data, journal, year)
 
 
+def get_publication_counts():
+    counts = Publication.objects.order_by('publication_type').values('publication_type__name').annotate(total=Count('id'))
+    
+    result = [(result['publication_type__name'], result['total']) for result in counts]
+    
+    return result
+
+
 def get_publication_quartiles_deciles():
     try:
         journal_type = PublicationType.objects.get(name__icontains='journal')
-        print(journal_type)
+        # print(journal_type)
     except:
         print('Failed to get journal publication type')
         return [], []

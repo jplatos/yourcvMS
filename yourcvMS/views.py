@@ -115,6 +115,7 @@ class PublicationSummaryView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(TemplateView, self).get_context_data(**kwargs)
+        context['counts'] = get_publication_counts()
         context['quartiles'], context['deciles'] = get_publication_quartiles_deciles()
         print(context)
         return context

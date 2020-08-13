@@ -8,6 +8,64 @@
 <div class="section">
     <h5>Publication Summary</h5>
     
+    <h6>Publication counts:</h6>
+    <div class="row">
+        <div class="col s12">
+            <table class="striped">
+                <tbody>
+                    <tr>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h6>Journals stats:</h6>
+    <div class="row">
+        <div class="col s4">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Quartiles:</td>
+                        {% for x in quartiles %}
+                        <td>Q{{forloop.counter}}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Counts:</td>
+                        {% for x in quartiles %}
+                        <td>{{x}}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col s7 offset-s1">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Deciles:</td>
+                        {% for x in deciles %}
+                        <td>D{{forloop.counter}}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Counts:</td>
+                        {% for x in deciles %}
+                        <td>{{x}}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
 </div>
 
 {% endblock %}
