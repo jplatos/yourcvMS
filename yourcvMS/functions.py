@@ -341,3 +341,103 @@ def get_publication_quartiles_deciles():
             print(journal, year)
 
     return quartiles, deciles
+
+
+def get_publication_article_counts():
+    try:
+        journal_type = PublicationType.objects.get(name__icontains='journal')
+        # print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=journal_type)
+    
+    counts = {}
+
+    for article in articles:
+        year = article.year
+        journal = article.journal
+        ranks = JournalSourceYearRank.objects.filter(journal=journal, year__lte=year).order_by('-year')
+        used_ranks = set()
+        for rank in ranks:
+            if rank.year==year or rank.year==year-1:
+                if rank.source.name not in used_ranks:
+                    used_ranks.add(rank.source.name)
+                    if rank.source.name not in counts:
+                        counts[rank.source.name] = 0
+                    counts[rank.source.name] += 1
+
+    return [(name, count) for name, count in counts.items()]
+
+
+def get_publication_impact_factors():
+    try:
+        journal_type = PublicationType.objects.get(name__icontains='journal')
+        # print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=journal_type)
+    
+    ranking = RankingSource.objects.get(name='WebOfScience')
+
+    thresholds = [5, 3, 1, 0]
+    factors = [0, 0, 0, 0]
+    
+    for article in articles:
+        year = article.year
+        journal = article.journal
+        ranks = JournalSourceYearRank.objects.filter(journal=journal, source=ranking, year__lte=year).order_by('-year')
+        
+        if ranks and ranks.count()>0:
+            current = ranks[0]
+            if current.year==year or current.year==year-1:
+                factor = current.factor
+                for idx, t in enumerate(thresholds):
+                    if factor>=t:
+                        factors[idx] += 1
+                        break
+                # factors.append(current.factor)
+        #     else:
+        #         print(journal, year)
+        # else:
+        #     print(journal, year)
+
+    return [(t,f) for t, f in zip(thresholds,factors)]
+
+def get_publication_scimago_factors():
+    try:
+        journal_type = PublicationType.objects.get(name__icontains='journal')
+        # print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=journal_type)
+    
+    ranking = RankingSource.objects.get(name='ScimagoJR')
+
+    thresholds = [2, 1, 0.5, 0]
+    factors = [0, 0, 0, 0]
+    
+    for article in articles:
+        year = article.year
+        journal = article.journal
+        ranks = JournalSourceYearRank.objects.filter(journal=journal, source=ranking, year__lte=year).order_by('-year')
+        
+        if ranks and ranks.count()>0:
+            current = ranks[0]
+            if current.year==year or current.year==year-1:
+                factor = current.factor
+                for idx, t in enumerate(thresholds):
+                    if factor>=t:
+                        factors[idx] += 1
+                        break
+        #     else:
+        #         print(journal, year)
+        # else:
+        #     print(journal, year)
+
+    return [(t,f) for t, f in zip(thresholds,factors)]

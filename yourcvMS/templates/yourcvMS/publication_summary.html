@@ -10,18 +10,39 @@
     
     <h6>Publication counts:</h6>
     <div class="row">
-        <div class="col s12">
+        <div class="col s4">
             <table class="striped">
                 <tbody>
+                    {% for name, count in publications %}
                     <tr>
-                        <td></td>
+                        <td>{{name}}</td>
+                        <td>{{count}}</td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 
-    <h6>Journals stats:</h6>
+    <h5>Journal articles</h5>
+
+    <h6>Number of journal articles indexed:</h6>
+    <div class="row">
+        <div class="col s4">
+            <table class="striped">
+                <tbody>
+                    {% for name, count in article_counts %}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{count}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h6>Journals quartiles and deciles:</h6>
     <div class="row">
         <div class="col s4">
             <table>
@@ -59,6 +80,51 @@
                         <td>Counts:</td>
                         {% for x in deciles %}
                         <td>{{x}}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h6>Journals factors:</h6>
+    <div class="row">
+        <div class="col s4">
+            <table>
+                <thead>
+                    <tr>
+                        <td>IF:</td>
+                        {% for t,f in webofscience %}
+                        <td>&ge;{{t|floatformat:1}}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Counts:</td>
+                        {% for t,f in webofscience %}
+                        <td>{{f}}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col s4 offset-s1">
+            <table>
+                <thead>
+                    <tr>
+                        <td>SJR:</td>
+                        {% for t,f in scimago %}
+                        <td>&ge;{{t|floatformat:1}}</td>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Counts:</td>
+                        {% for t,f in scimago %}
+                        <td>{{f}}</td>
                         {% endfor %}
                     </tr>
                 </tbody>
