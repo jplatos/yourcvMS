@@ -76,12 +76,12 @@ class PublicationTypeListView(ListView):
    
 class PublicationTypeCreateView(CreateView):
     model = PublicationType
-    fields = ['name']
+    fields = ['name', 'czech_name']
     success_url = reverse_lazy('yourcvMS:publicationtype-list')
 
 class PublicationTypeUpdateView(UpdateView):
     model = PublicationType
-    fields = ['name']
+    fields = ['name', 'czech_name']
     success_url = reverse_lazy('yourcvMS:publicationtype-list')
 
 class PublicationTypeDeleteView(DeleteView):
@@ -117,10 +117,11 @@ class PublicationSummaryView(TemplateView):
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['publications'] = get_publication_counts()
         context['article_counts'] = get_publication_article_counts()
+        context['article_list'] = get_publication_article_list()
         context['quartiles'], context['deciles'] = get_publication_quartiles_deciles()
         context['webofscience'] = get_publication_impact_factors()
         context['scimago'] = get_publication_scimago_factors()
-        print(context)
+        # print(context)
         return context
 
 class PublicationDetailView(DetailView):

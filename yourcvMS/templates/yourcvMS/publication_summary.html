@@ -131,6 +131,32 @@
             </table>
         </div>
     </div>
+
+    <h5>List of Journal articles</h5>
+
+    <div class="row">
+        <div class="col s12">
+            <table class="stripped highlight">        
+                <tbody>
+                    {% for article, meta in article_list %}
+                    <tr> {% comment %} class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}"> {% endcomment %}
+                        <td>
+                            {{article.full_citation}}
+                            <ul class="collections">
+                                {% for values in meta %}
+                                <li>{{values}}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
     
 </div>
 

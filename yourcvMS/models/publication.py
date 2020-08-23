@@ -113,6 +113,10 @@ class Publication(TimeTracked):
         if self.year:
             parts.append(str(self.year))
         return ', '.join(parts)+'.'
+
+    @property
+    def full_citation(self):
+        return '. '.join([': '.join([self.authors_str, self.title]), self.source_str])
     
     def __str__(self):
         return f'{self.title}, {self.source_str}'

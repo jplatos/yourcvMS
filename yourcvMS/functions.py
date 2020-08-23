@@ -225,8 +225,9 @@ def get_most_similar(original):
 
 def get_journal_ranking_from_service_xml(issn, year):
     try:
-        # url = f'https://db.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year={year}'
-        url = f'http://dbsys.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year={year}'
+        url = f'https://db.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year={year}'
+        # url = f'https://db.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year=0&closestYear=yes'
+        # url = f'http://dbsys.cs.vsb.cz/scis/journals/journalhandler.ashx?cmd=journalInfo&searchstring={issn}&year={year}'
         print(url)
         contents = urllib.request.urlopen(url).read()
         # print(contents)
@@ -441,3 +442,36 @@ def get_publication_scimago_factors():
         #     print(journal, year)
 
     return [(t,f) for t, f in zip(thresholds,factors)]
+
+
+def get_publication_article_list():
+    try:
+        journal_type = PublicationType.objects.get(name__icontains='journal')
+        # print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=journal_type)
+    
+    result = []
+    
+    for article in articles:   
+        meta = []
+
+        # source factors  
+        factors = []
+        year = article.year
+        journal = article.journal
+        ranks = JournalSourceYearRank.objects.filter(journal=journal, year__lte=year).order_by('-year', '-source')
+        used_ranks = set()
+        for rank in ranks:
+            if rank.year==year or rank.year==year-1:
+                if rank.source.name not in used_ranks:
+                    used_ranks.add(rank.source.name)
+                    factors.append(f'{rank.source.factor_name}: {rank.factor}/{rank.year}')
+        meta.append(', '.join(factors))
+
+        result.append((article, meta))
+
+    return result
