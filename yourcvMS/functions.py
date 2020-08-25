@@ -472,6 +472,22 @@ def get_publication_article_list():
                     factors.append(f'{rank.source.factor_name}: {rank.factor}/{rank.year}')
         meta.append(', '.join(factors))
 
+        # percentils  
+        factors = []
+        year = article.year
+        journal = article.journal
+        ranks = JournalYearRank.objects.filter(journal=journal, year__lte=year).order_by('-year')
+        for rank in ranks:
+            if rank.year==year or rank.year==year-1:
+                meta.append(f'Average centile: {rank.centil_average}')
+
+
+        # citations
+        if article.wos_citation_count and article.wos_citation_count>0:
+            meta.append(f'Number of WoS citations: {article.wos_citation_count}')
+        if article.scopus_citation_count and article.scopus_citation_count>0:
+            meta.append(f'Number of Scopus citations: {article.scopus_citation_count}')
+
         result.append((article, meta))
 
     return result
