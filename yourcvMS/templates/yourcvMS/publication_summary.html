@@ -7,16 +7,18 @@
 
 <div class="section">
     <h5>Publication Summary</h5>
-    
+    <div class="row">
+        <a class="btn" href="{% url 'yourcvMS:publication-summary' %}?type=latex">LATEX</a>        
+    </div>
     <h6>Publication counts:</h6>
     <div class="row">
         <div class="col s4">
             <table class="striped">
                 <tbody>
-                    {% for name, count in publications %}
+                    {% for pub in publications %}
                     <tr>
-                        <td>{{name}}</td>
-                        <td>{{count}}</td>
+                        <td>{{pub.name}}</td>
+                        <td>{{pub.count}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -31,7 +33,7 @@
         <div class="col s4">
             <table class="striped">
                 <tbody>
-                    {% for name, count in article_counts %}
+                    {% for name,count in article_counts %}
                     <tr>
                         <td>{{name}}</td>
                         <td>{{count}}</td>
@@ -143,9 +145,12 @@
                         <td>
                             {{article.full_citation}}
                             <ul class="collections">
-                                {% for values in meta %}
-                                <li>{{values}}</li>
-                                {% endfor %}
+                                <li>{{meta.factors}}</li>
+                                <li>Average centile: {{meta.centile}}</li>
+                                <li>Categories: {{meta.categories}}</li>
+                                {% if meta.citations %}
+                                <li>Citations: {{meta.citations}}</li>
+                                {% endif %}
                             </ul>
                         </td>
                     </tr>

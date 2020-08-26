@@ -90,6 +90,8 @@
                 {% endfor %}
             </ul>
             <a class="btn" href="{% url 'yourcvMS:journal-get-ranking' object.id %}">Get ranking from service</a>
+            <a class="btn red" href="{% url 'yourcvMS:journal-clear-ranking' object.id %}">Remove all rankings</a>
+            <a class="btn blue" href="{% url 'yourcvMS:journal-refresh-ranking' object.id %}">Refresh rankings</a>
         </div>
     </div>
 

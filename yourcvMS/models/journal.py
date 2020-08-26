@@ -17,7 +17,10 @@ class Journal(TimeTracked):
 
 class RankingSource(TimeTracked):
     name = models.CharField(max_length=100, blank=True, null=True)
+    shortcut = models.CharField(max_length=20, blank=True, null=True)
     factor_name = models.CharField(max_length=100, blank=True, null=True)
+    factor_shortcut = models.CharField(max_length=100, blank=True, null=True)
+   
 
 class JournalYearRank(TimeTracked):
     class Meta:

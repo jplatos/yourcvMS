@@ -286,7 +286,7 @@ def process_journal_ranking_xml(data, journal, year):
 
 
 
-def get_rankings(journal):
+def rankings_get(journal):
     years = set()
     for publication in journal.publication_set.all():
         years.add(publication.year)
@@ -304,11 +304,26 @@ def get_rankings(journal):
         if data:
             process_journal_ranking_xml(data, journal, year)
 
+def rankings_clear(journal):
+    JournalSourceYearCategory.objects.filter(journal=journal).delete()
+    JournalSourceYearRank.objects.filter(journal=journal).delete()
+    JournalYearRank.objects.filter(journal=journal).delete()
+
+def rankings_refresh(journal):
+    rankings_clear(journal)
+    rankings_get(journal)
+
+
 
 def get_publication_counts():
-    counts = Publication.objects.order_by('publication_type').values('publication_type__name').annotate(total=Count('id'))
+    counts = Publication.objects.order_by('publication_type').values('publication_type__key', 'publication_type__name', 'publication_type__czech_name').annotate(total=Count('id'))
     
-    result = [(result['publication_type__name'], result['total']) for result in counts]
+    result = [{
+        'count':result['total'],
+        'name':result['publication_type__name'],
+        'czech_name':result['publication_type__czech_name']
+        } 
+        for result in counts]
     
     return result
 
@@ -365,11 +380,14 @@ def get_publication_article_counts():
             if rank.year==year or rank.year==year-1:
                 if rank.source.name not in used_ranks:
                     used_ranks.add(rank.source.name)
-                    if rank.source.name not in counts:
-                        counts[rank.source.name] = 0
-                    counts[rank.source.name] += 1
-
-    return [(name, count) for name, count in counts.items()]
+                    if rank.source not in counts:
+                        counts[rank.source] = 0
+                    counts[rank.source] += 1
+    as_list = [(source.name, count) for source, count in counts.items()]
+    print(as_list)
+    as_dict= {source.shortcut.lower():{'name':source.name, 'shortcut':source.shortcut, 'count':count} for source, count in counts.items()}
+    print(as_dict)
+    return as_list, as_dict 
 
 
 def get_publication_impact_factors():
@@ -457,7 +475,7 @@ def get_publication_article_list():
     result = []
     
     for article in articles:   
-        meta = []
+        meta = {}
 
         # source factors  
         factors = []
@@ -465,12 +483,14 @@ def get_publication_article_list():
         journal = article.journal
         ranks = JournalSourceYearRank.objects.filter(journal=journal, year__lte=year).order_by('-year', '-source')
         used_ranks = set()
+        used_source_years = []
         for rank in ranks:
             if rank.year==year or rank.year==year-1:
                 if rank.source.name not in used_ranks:
                     used_ranks.add(rank.source.name)
-                    factors.append(f'{rank.source.factor_name}: {rank.factor}/{rank.year}')
-        meta.append(', '.join(factors))
+                    used_source_years.append((rank.source, rank.year))
+                    factors.append(f'{rank.source.factor_shortcut}: {rank.factor}/{rank.year}')
+        meta['factors'] = ', '.join(factors)
 
         # percentils  
         factors = []
@@ -479,14 +499,24 @@ def get_publication_article_list():
         ranks = JournalYearRank.objects.filter(journal=journal, year__lte=year).order_by('-year')
         for rank in ranks:
             if rank.year==year or rank.year==year-1:
-                meta.append(f'Average centile: {rank.centil_average}')
+                meta['centile'] = f'{rank.centil_average}'
 
+        # categories
+        all_categories = []
+        for source, year in used_source_years:
+            categories = JournalSourceYearCategory.objects.filter(journal=article.journal, year=year, source=source).order_by('-category')
+            all_categories.extend([x.category for x in categories])
+            if all_categories:
+                all_categories[-1] = all_categories[-1]+f' ({source.shortcut})'
+        meta['categories'] = ', '.join(all_categories)
 
         # citations
+        cit = []
         if article.wos_citation_count and article.wos_citation_count>0:
-            meta.append(f'Number of WoS citations: {article.wos_citation_count}')
+            cit.append(f'{article.wos_citation_count} (WoS)')
         if article.scopus_citation_count and article.scopus_citation_count>0:
-            meta.append(f'Number of Scopus citations: {article.scopus_citation_count}')
+            cit.append(f'{article.scopus_citation_count} (Scopus)')
+        meta['citations'] = ', '.join(cit)
 
         result.append((article, meta))
 

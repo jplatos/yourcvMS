@@ -1,0 +1,44 @@
+<html>
+<head>
+<meta charset='utf-8'>
+</head>
+
+<body>
+<pre>
+\section{Výsledky tvůrčí a vědecké činnosti}
+
+\subsubsection*{Shrnutí publikační činnosti:}
+\begin{tabular}{lr}
+    {% for pub in publications %}
+    {{pub.czech_name}} & {{pub.count}} \\
+    {% endfor %}
+\end{tabular}
+
+\subsection{Články v časopisech}
+\subsubsection*{Počty článků:}
+\begin{tabular}{lr}
+	Články v časopisech s IF indexované ve Web of Science & {{article_counts_map.wos.count}} \\
+	Články v časopisech se SJR indexované ve Scopus & {{article_counts_map.scopus.count}} \\
+\end{tabular}
+
+\subsubsection*{Články v časopisech dle IF/SJR:}
+\begin{center}
+\begin{tabular}{c|ccccp{2cm}c|cccc}
+	IF {% for t,f in webofscience %}& $>{{t|floatformat:1}}$ {% endfor %} & & SJR {% for t,f in scimago %}& $>{{t|floatformat:1}}${% endfor %}\\
+    \cline{1-5}\cline{7-11}
+	Počet {% for t,f in webofscience %}& {{f}} {% endfor %} & & Počet {% for t,f in scimago %}& {{f}} {% endfor %}\\
+\end{tabular}
+\end{center}
+
+\subsubsection*{Počty článků v časopisech dle průměrného decilu/kvartilu na WoS i Scopus:}
+\begin{center}
+	\begin{tabular}{ccccccccccp{2cm}cccc}
+		D1 & D2 & D3 & D4 & D5 & D6 & D7 & D8 & D9 & D10 & & Q1 & Q2 & Q3 & Q4\\
+		\cline{1-10}\cline{12-15}
+		{% for d in deciles %}{{d}} & {% endfor %} {% for d in quartiles %}& {{d}} {% endfor %}\\
+	\end{tabular}
+\end{center}
+
+</pre>
+</body>
+</html>

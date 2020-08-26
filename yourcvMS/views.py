@@ -76,12 +76,12 @@ class PublicationTypeListView(ListView):
    
 class PublicationTypeCreateView(CreateView):
     model = PublicationType
-    fields = ['name', 'czech_name']
+    fields = ['key', 'name', 'czech_name']
     success_url = reverse_lazy('yourcvMS:publicationtype-list')
 
 class PublicationTypeUpdateView(UpdateView):
     model = PublicationType
-    fields = ['name', 'czech_name']
+    fields = ['key', 'name', 'czech_name']
     success_url = reverse_lazy('yourcvMS:publicationtype-list')
 
 class PublicationTypeDeleteView(DeleteView):
@@ -110,19 +110,45 @@ class PublicationUpdateView(UpdateView):
     success_url = reverse_lazy('yourcvMS:publication-list')
 
 class PublicationSummaryView(TemplateView):
+    
     template_name = 'yourcvMS/publication_summary.html'
     success_url = reverse_lazy('yourcvMS:publication-summary')
+    content_type = 'text/html'
+
+    type_template_content = {'latex':('yourcvMS/publication_summary.tex', 'text/html')}#'application/x-latex'
+
+    def template_from_query(self):
+        if 'type' in self.request.GET:
+            typ = self.request.GET.get('type')
+            if typ in self.type_template_content:
+                return self.type_template_content[typ][0]
+        return self.template_name
+
+    def content_type_from_query(self):
+        if 'type' in self.request.GET:
+            typ = self.request.GET.get('type')
+            if typ in self.type_template_content:
+                return self.type_template_content[typ][1]
+        return 'text/html'
+
+    def get_template_names(self):
+        return self.template_from_query()
+
+    def render_to_response(self, context, **response_kwargs):
+        response_kwargs['content_type'] = self.content_type_from_query()    
+        return super(TemplateView, self).render_to_response(context, **response_kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['publications'] = get_publication_counts()
-        context['article_counts'] = get_publication_article_counts()
+        context['article_counts'], context['article_counts_map'] = get_publication_article_counts()
         context['article_list'] = get_publication_article_list()
         context['quartiles'], context['deciles'] = get_publication_quartiles_deciles()
         context['webofscience'] = get_publication_impact_factors()
         context['scimago'] = get_publication_scimago_factors()
         # print(context)
         return context
+
 
 class PublicationDetailView(DetailView):
     model = Publication    
@@ -292,7 +318,7 @@ class JournalGetRanking(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         journal = get_object_or_404(Journal, pk=kwargs['pk'])
-        get_rankings(journal)
+        rankings_get(journal)
         return super().get_redirect_url(*args, **kwargs)
 
 class JournalYearRankDeleteView(DeleteView):
@@ -301,6 +327,25 @@ class JournalYearRankDeleteView(DeleteView):
     def get_success_url(self):
         return reverse_lazy('yourcvMS:journal-detail', kwargs = {'pk': self.object.journal.id })
 
+class JournalClearRanking(RedirectView):
+    permanent = False
+    query_string = True
+    pattern_name = 'yourcvMS:journal-detail'
+
+    def get_redirect_url(self, *args, **kwargs):
+        journal = get_object_or_404(Journal, pk=kwargs['pk'])
+        rankings_clear(journal)
+        return super().get_redirect_url(*args, **kwargs)
+
+class JournalRefreshRanking(RedirectView):
+    permanent = False
+    query_string = True
+    pattern_name = 'yourcvMS:journal-detail'
+
+    def get_redirect_url(self, *args, **kwargs):
+        journal = get_object_or_404(Journal, pk=kwargs['pk'])
+        rankings_refresh(journal)
+        return super().get_redirect_url(*args, **kwargs)
 
 
 #######################################
