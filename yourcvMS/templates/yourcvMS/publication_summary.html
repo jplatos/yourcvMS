@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <h5>List of Journal articles</h5>
+    <h6>List of Journal articles</h6>
 
     <div class="row">
         <div class="col s12">
@@ -161,8 +161,53 @@
     </div>
 
 
-
-    
+    <h5>Conference papers</h5>
+    <ul class="collapsible">
+        <li>
+            <div class="collapsible-header">Number of conference papers indexed:</div>
+            <div class="collapsible-body">
+                <div class="row">
+                    <div class="col s4">
+                        <table class="striped">
+                            <tbody>
+                                {% for name,count in conference_counts %}
+                                <tr>
+                                    <td>{{name}}</td>
+                                    <td>{{count}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="collapsible-header">List of conference papers</div>
+            <div class="collapsible-body">
+                <div class="row">
+                    <div class="col s12">
+                        <table class="stripped highlight">        
+                            <tbody>
+                                {% for article, meta in conference_list %}
+                                <tr> {% comment %} class="clickable-row" data-href="{% url 'yourcvMS:publication-detail' object.id %}"> {% endcomment %}
+                                    <td>
+                                        {{article.full_citation}}
+                                        {% if meta.citations %}
+                                        <ul class="collections">
+                                            <li>Citations: {{meta.citations}}</li>
+                                        </ul>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
 </div>
 
 {% endblock %}

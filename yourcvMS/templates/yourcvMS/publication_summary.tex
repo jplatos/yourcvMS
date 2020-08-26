@@ -1,3 +1,5 @@
+{% load latex_escape %}
+
 <html>
 <head>
 <meta charset='utf-8'>
@@ -5,6 +7,8 @@
 
 <body>
 <pre>
+
+
 \section{Výsledky tvůrčí a vědecké činnosti}
 
 \subsubsection*{Shrnutí publikační činnosti:}
@@ -38,6 +42,39 @@
 		{% for d in deciles %}{{d}} & {% endfor %} {% for d in quartiles %}& {{d}} {% endfor %}\\
 	\end{tabular}
 \end{center}
+
+\subsubsection*{Seznam článků:}
+\begin{enumerate}
+	{% for article, meta in article_list %}
+	\item {{article.full_citation|latex_escape}}
+	\begin{itemize}
+		\item {{meta.factors}}
+		\item Průměrný percentil na WoS a Scopus: {{meta.centile}}
+		\item Obory: {{meta.categories|latex_escape}}
+		{% if meta.citations %}\item Počet citací: {{meta.citations}}{% endif %}
+	\end{itemize}
+	{% endfor %}
+\end{enumerate}
+
+
+
+\subsection{Články ve sbornících konferencí}
+
+\subsubsection*{Počty článků:}
+\begin{tabular}{lr}
+	Články v sbornících indexovaných ve Web of Science & {{conference_counts_map.wos.count}} \\
+	Články v sbornících indexovaných ve Scopus & {{conference_counts_map.scopus.count}} \\
+\end{tabular}
+
+\subsubsection*{Seznam vybraných článků}
+\begin{enumerate}
+	{% for article, meta in conference_list %}
+	\item {{article.full_citation|latex_escape}}
+	{% if meta.citations %}\begin{itemize}
+		\item Počet citací: {{meta.citations}}
+	\end{itemize}{% endif %}
+	{% endfor %}
+\end{enumerate}
 
 </pre>
 </body>

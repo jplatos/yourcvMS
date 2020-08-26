@@ -146,6 +146,8 @@ class PublicationSummaryView(TemplateView):
         context['quartiles'], context['deciles'] = get_publication_quartiles_deciles()
         context['webofscience'] = get_publication_impact_factors()
         context['scimago'] = get_publication_scimago_factors()
+        context['conference_counts'], context['conference_counts_map'] = get_publication_conference_counts()
+        context['conference_list'] = get_publication_conference_list()
         # print(context)
         return context
 

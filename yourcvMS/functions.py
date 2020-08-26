@@ -521,3 +521,56 @@ def get_publication_article_list():
         result.append((article, meta))
 
     return result
+
+
+def get_publication_conference_counts():
+    try:
+        conference_type = PublicationType.objects.get(name__icontains='conference')
+        # print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=conference_type)
+    
+    counts = {'wos':0, 'scopus':0}
+    names = {'wos':'Web of Sciene', 'scopus':'Scopus'}
+    for article in articles:
+        if article.wos_id:
+            counts['wos'] += 1
+        if article.scopus_id:
+            counts['scopus'] += 1
+    as_list = [(names[name], count) for name, count in counts.items()]
+    # print(as_list)
+    as_dict= {name:{'name':names[name], 'count':count} for name, count in counts.items()}
+    # print(as_dict)
+    return as_list, as_dict 
+
+
+def get_publication_conference_list():
+    try:
+        journal_type = PublicationType.objects.get(name__icontains='conference')
+        # print(journal_type)
+    except:
+        print('Failed to get journal publication type')
+        return [], []
+
+    articles = Publication.objects.filter(publication_type=journal_type, wos_citation_count__gt=0, scopus_citation_count__gt=0)
+    
+    result = []
+    
+    for article in articles:   
+        meta = {}
+
+        # citations
+        cit = []
+        if article.wos_citation_count and article.wos_citation_count>0:
+            cit.append(f'{article.wos_citation_count} (WoS)')
+        if article.scopus_citation_count and article.scopus_citation_count>0:
+            cit.append(f'{article.scopus_citation_count} (Scopus)')
+        meta['citations'] = ', '.join(cit)
+
+        result.append((article, meta))
+
+    return result
+
